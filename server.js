@@ -387,10 +387,13 @@ app.post('/modules/:id/attempts', async (req, res) => {
 
     const coinsEarned = coinsForScore(scorePct);
     if (coinsEarned > 0) {
+      const { data: moduleRow } = await supabase.from('modules').select('title').eq('id', id).maybeSingle();
+      const moduleTitle = moduleRow ? moduleRow.title : 'a quiz';
+
       const { error: coinError } = await supabase.from('coin_transactions').insert({
         kind: 'earned',
         amount: coinsEarned,
-        note: `Quiz score ${scorePct}%`,
+        note: `${moduleTitle} — ${scorePct}%`,
         quiz_attempt_id: data.id
       });
       if (coinError) console.error('Failed to record earned coins:', coinError);

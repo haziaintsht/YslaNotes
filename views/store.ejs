@@ -54,7 +54,7 @@
     <h2 class="text-lg font-bold text-slate-800 mb-3">Catalog</h2>
     <% if (items.length === 0) { %>
       <div class="text-center py-10 bg-white rounded-xl border border-dashed border-pink-200 mb-8">
-        <p class="text-slate-500">No items yet — add one below.</p>
+        <p class="text-slate-500">No items in the store yet.</p>
       </div>
     <% } else { %>
       <div class="grid sm:grid-cols-2 gap-4 mb-8">
@@ -106,27 +106,6 @@
         <% }) %>
       </div>
     <% } %>
-
-    <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
-      <%- icon('plusCircle', 'icon w-5 h-5 text-pink-500') %> Add a Reward
-    </h2>
-    <form method="POST" action="/store/items/add" class="qa-row mb-8">
-      <label class="block text-xs font-semibold text-slate-500 mb-1">Name</label>
-      <input type="text" name="name" required placeholder="e.g. New lip gloss"
-        class="w-full border border-slate-300 rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-pink-400" />
-
-      <label class="block text-xs font-semibold text-slate-500 mb-1">Description (optional)</label>
-      <textarea name="description" rows="2" placeholder="Any details"
-        class="w-full border border-slate-300 rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-pink-400"></textarea>
-
-      <label class="block text-xs font-semibold text-slate-500 mb-1">Cost (coins)</label>
-      <input type="number" name="cost" min="1" required placeholder="e.g. 30"
-        class="w-full border border-slate-300 rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-pink-400" />
-
-      <button type="submit" data-sound="click" class="w-full bg-fuchsia-500 text-white font-semibold py-2 rounded-full hover:bg-fuchsia-600 transition flex items-center justify-center gap-2">
-        <%- icon('plusCircle', 'icon w-4 h-4') %> Add to Store
-      </button>
-    </form>
 
     <h2 class="text-lg font-bold text-slate-800 mb-3">Recent Activity</h2>
     <% if (history.length === 0) { %>

@@ -458,29 +458,6 @@ app.post('/store/:id/redeem', async (req, res) => {
   }
 });
 
-// POST /store/items/add — Add a new item to the store catalog
-app.post('/store/items/add', async (req, res) => {
-  try {
-    const { name, description, cost } = req.body;
-    const parsedCost = parseInt(cost, 10);
-    if (!name || !parsedCost || parsedCost < 1) {
-      return res.status(400).send('Name and a cost of at least 1 coin are required.');
-    }
-
-    const { error } = await supabase.from('store_items').insert({
-      name,
-      description: description || null,
-      cost: parsedCost
-    });
-    if (error) throw error;
-
-    res.redirect('/store');
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error adding item: ' + err.message);
-  }
-});
-
 // POST /store/items/:id/update — Edit an existing store item
 app.post('/store/items/:id/update', async (req, res) => {
   try {

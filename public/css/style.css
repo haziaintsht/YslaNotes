@@ -308,33 +308,50 @@ button:not(:disabled):active, a.btn:active {
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* --- Walking mascot (original character, purely decorative) --- */
+/* --- Walking mascot (original character, purely decorative) — paces the empty
+   gap between the nav's brand and its buttons; --walk-start/--walk-end are set
+   per-page in mascot.js since that gap's width varies by page. --- */
 .mascot-walker {
-  position: fixed;
-  bottom: 10px;
-  left: -90px;
-  width: 60px;
-  height: 60px;
+  position: absolute;
+  top: 50%;
+  left: var(--walk-start, 50%);
+  width: 54px;
+  height: 54px;
+  transform: translateY(-50%);
   pointer-events: none;
-  z-index: 30;
-  animation: mascotWalk 20s linear infinite;
-  filter: drop-shadow(0 3px 4px rgba(219, 39, 119, 0.25));
+  z-index: 5;
+  animation: mascotWalk 7s ease-in-out infinite alternate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mascot-walker::before {
+  content: '';
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 2px 6px rgba(219, 39, 119, 0.25);
 }
 
 .mascot-walker svg {
+  position: relative;
   width: 100%;
   height: 100%;
-  animation: mascotBob 0.45s ease-in-out infinite alternate;
+  animation: mascotBob 0.4s ease-in-out infinite alternate;
+  filter: drop-shadow(0 2px 2px rgba(190, 24, 93, 0.35));
 }
 
 @keyframes mascotWalk {
-  from { left: -90px; }
-  to { left: calc(100% + 20px); }
+  from { left: var(--walk-start, 50%); }
+  to { left: var(--walk-end, 50%); }
 }
 
 @keyframes mascotBob {
   from { transform: translateY(0) rotate(-4deg); }
-  to { transform: translateY(-7px) rotate(4deg); }
+  to { transform: translateY(-4px) rotate(4deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -20,10 +20,10 @@
         <a href="/study/<%= module.id %>" class="text-white/80 hover:text-white text-sm flex items-center gap-1">
           <%- icon('arrowLeft', 'icon w-4 h-4') %> Back to study
         </a>
-        <a href="/store" data-sound="click" class="bg-white/20 text-white font-semibold px-3 py-2 rounded-full hover:bg-white/30 transition flex items-center gap-1.5" title="Rewards Store">
+        <a href="/store" data-sound="click" class="btn-glossy btn-glossy-amber px-3 py-2 rounded-full font-semibold flex items-center gap-1.5" title="Rewards Store">
           <%- icon('coin', 'icon w-4 h-4') %> <%= coinBalance %>
         </a>
-        <button id="mute-toggle" class="mute-toggle text-white/90" title="Toggle sound">
+        <button id="mute-toggle" class="mute-toggle btn-glossy btn-glossy-icon btn-glossy-outline" title="Toggle sound">
           <span id="mute-icon-on"><%- icon('speakerWave', 'icon w-5 h-5') %></span>
           <span id="mute-icon-off" class="hidden"><%- icon('speakerX', 'icon w-5 h-5') %></span>
         </button>
@@ -80,7 +80,7 @@
           <textarea name="options" rows="4" placeholder="Option A&#10;Option B&#10;Option C&#10;Option D"
             class="w-full border border-slate-300 rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-pink-400"><%= Array.isArray(card.options) ? card.options.join('\n') : '' %></textarea>
 
-          <button type="submit" data-sound="click" class="w-full bg-pink-600 text-white font-semibold py-2 rounded-full hover:bg-pink-700 transition">
+          <button type="submit" data-sound="click" class="btn-glossy btn-glossy-pink w-full py-2 rounded-full font-semibold">
             Save
           </button>
         </form>
@@ -115,7 +115,7 @@
       <textarea name="options" rows="4" placeholder="Option A&#10;Option B&#10;Option C&#10;Option D"
         class="w-full border border-slate-300 rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-pink-400"></textarea>
 
-      <button type="submit" data-sound="click" class="w-full bg-fuchsia-500 text-white font-semibold py-2 rounded-full hover:bg-fuchsia-600 transition flex items-center justify-center gap-2">
+      <button type="submit" data-sound="click" class="btn-glossy btn-glossy-fuchsia w-full py-2 rounded-full font-semibold flex items-center justify-center gap-2">
         <%- icon('plusCircle', 'icon w-4 h-4') %> Add Question
       </button>
     </form>

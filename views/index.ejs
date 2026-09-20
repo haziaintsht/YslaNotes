@@ -17,16 +17,16 @@
         <%- icon('book', 'icon w-6 h-6') %> YslaNotes
       </a>
       <div class="flex items-center gap-2">
-        <a href="/generate" data-sound="click" class="bg-white text-pink-600 font-semibold px-4 py-2 rounded-full hover:bg-pink-50 transition flex items-center gap-1.5">
+        <a href="/generate" data-sound="click" class="btn-glossy btn-glossy-white px-4 py-2 rounded-full font-semibold flex items-center gap-1.5">
           <%- icon('sparkles', 'icon w-4 h-4') %> Generate from File
         </a>
-        <a href="/create" data-sound="click" class="bg-white text-pink-600 font-semibold px-4 py-2 rounded-full hover:bg-pink-50 transition flex items-center gap-1.5">
+        <a href="/create" data-sound="click" class="btn-glossy btn-glossy-white px-4 py-2 rounded-full font-semibold flex items-center gap-1.5">
           <%- icon('plusCircle', 'icon w-4 h-4') %> New Module
         </a>
-        <a href="/store" data-sound="click" class="bg-white/20 text-white font-semibold px-3 py-2 rounded-full hover:bg-white/30 transition flex items-center gap-1.5" title="Rewards Store">
+        <a href="/store" data-sound="click" class="btn-glossy btn-glossy-amber px-3 py-2 rounded-full font-semibold flex items-center gap-1.5" title="Rewards Store">
           <%- icon('coin', 'icon w-4 h-4') %> <%= coinBalance %>
         </a>
-        <button id="mute-toggle" class="mute-toggle text-white/90" title="Toggle sound">
+        <button id="mute-toggle" class="mute-toggle btn-glossy btn-glossy-icon btn-glossy-outline" title="Toggle sound">
           <span id="mute-icon-on"><%- icon('speakerWave', 'icon w-5 h-5') %></span>
           <span id="mute-icon-off" class="hidden"><%- icon('speakerX', 'icon w-5 h-5') %></span>
         </button>
@@ -82,7 +82,7 @@
           <option value="<%= cat %>" <%= selectedCategory === cat ? 'selected' : '' %>><%= cat %></option>
         <% }) %>
       </select>
-      <button type="submit" data-sound="click" class="bg-pink-600 text-white px-5 py-2 rounded-full hover:bg-pink-700 transition flex items-center justify-center gap-1.5">
+      <button type="submit" data-sound="click" class="btn-glossy btn-glossy-pink px-5 py-2 rounded-full font-semibold flex items-center justify-center gap-1.5">
         <%- icon('search', 'icon w-4 h-4') %> Search
       </button>
     </form>

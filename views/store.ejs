@@ -20,7 +20,7 @@
         <a href="/" class="text-white/80 hover:text-white text-sm flex items-center gap-1">
           <%- icon('arrowLeft', 'icon w-4 h-4') %> Back to dashboard
         </a>
-        <button id="mute-toggle" class="mute-toggle text-white/90" title="Toggle sound">
+        <button id="mute-toggle" class="mute-toggle btn-glossy btn-glossy-icon btn-glossy-outline" title="Toggle sound">
           <span id="mute-icon-on"><%- icon('speakerWave', 'icon w-5 h-5') %></span>
           <span id="mute-icon-off" class="hidden"><%- icon('speakerX', 'icon w-5 h-5') %></span>
         </button>
@@ -72,7 +72,7 @@
                 <form method="POST" action="/store/<%= item.id %>/redeem">
                   <button type="submit" data-sound="click" data-confirm="Redeem &quot;<%= item.name %>&quot; for <%= item.cost %> coins?"
                     <%= balance < item.cost ? 'disabled' : '' %>
-                    class="px-4 py-1.5 rounded-full text-sm font-semibold transition <%= balance < item.cost ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-pink-600 text-white hover:bg-pink-700' %>">
+                    class="btn-glossy px-4 py-1.5 rounded-full text-sm font-semibold <%= balance < item.cost ? 'btn-glossy-outline' : 'btn-glossy-pink' %>">
                     Redeem
                   </button>
                 </form>
@@ -88,7 +88,7 @@
                         class="w-full border border-slate-300 rounded-lg px-2 py-1 text-sm mb-2" placeholder="Description"><%= item.description || '' %></textarea>
                       <input type="number" name="cost" value="<%= item.cost %>" min="1" required
                         class="w-full border border-slate-300 rounded-lg px-2 py-1 text-sm mb-2" placeholder="Cost in coins" />
-                      <button type="submit" data-sound="click" class="w-full bg-pink-600 text-white text-sm font-semibold py-1.5 rounded-lg hover:bg-pink-700 transition">
+                      <button type="submit" data-sound="click" class="btn-glossy btn-glossy-pink w-full text-sm font-semibold py-1.5 rounded-lg">
                         Save
                       </button>
                     </form>

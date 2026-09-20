@@ -18,7 +18,20 @@ window.addEventListener('load', () => {
 
   const navRect = nav.getBoundingClientRect();
   const brandRect = innerContent.children[0].getBoundingClientRect();
-  const controlsRect = innerContent.children[innerContent.children.length - 1].getBoundingClientRect();
+
+  // The nav now has both a desktop button row and a mobile hamburger button as
+  // siblings — only one is visible at a given viewport width (the other is
+  // display:none and reports a zero-size rect). Use whichever is actually rendered.
+  const children = Array.from(innerContent.children);
+  let controlsRect = null;
+  for (let i = children.length - 1; i >= 1; i--) {
+    const rect = children[i].getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      controlsRect = rect;
+      break;
+    }
+  }
+  if (!controlsRect) return;
 
   const gapStart = brandRect.right - navRect.left + PADDING;
   const gapEnd = controlsRect.left - navRect.left - PADDING - MASCOT_SIZE;

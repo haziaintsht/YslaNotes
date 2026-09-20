@@ -60,29 +60,33 @@ window.SoundManager = (() => {
   };
 })();
 
-// Wires up: any element with data-sound="click" plays a soft click, and an optional
-// #mute-toggle button (with #mute-icon-on / #mute-icon-off child spans) toggles sound.
+// Wires up: any element with data-sound="click" plays a soft click, and every
+// .mute-toggle button on the page (there may be a desktop AND a mobile copy)
+// toggles sound in sync, each showing/hiding its own #mute-icon-on/#mute-icon-off pair.
 document.addEventListener('DOMContentLoaded', () => {
   document.body.addEventListener('click', (e) => {
     const el = e.target.closest('[data-sound="click"]');
     if (el) window.SoundManager.click();
   }, true);
 
-  const muteBtn = document.getElementById('mute-toggle');
-  if (!muteBtn) return;
+  const muteBtns = document.querySelectorAll('.mute-toggle');
+  if (muteBtns.length === 0) return;
 
-  const iconOn = document.getElementById('mute-icon-on');
-  const iconOff = document.getElementById('mute-icon-off');
-
-  function syncIcon() {
+  function syncIcons() {
     const isMuted = window.SoundManager.isMuted();
-    if (iconOn) iconOn.classList.toggle('hidden', isMuted);
-    if (iconOff) iconOff.classList.toggle('hidden', !isMuted);
+    muteBtns.forEach(btn => {
+      const iconOn = btn.querySelector('[id^="mute-icon-on"]');
+      const iconOff = btn.querySelector('[id^="mute-icon-off"]');
+      if (iconOn) iconOn.classList.toggle('hidden', isMuted);
+      if (iconOff) iconOff.classList.toggle('hidden', !isMuted);
+    });
   }
 
-  syncIcon();
-  muteBtn.addEventListener('click', () => {
-    window.SoundManager.setMuted(!window.SoundManager.isMuted());
-    syncIcon();
+  syncIcons();
+  muteBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      window.SoundManager.setMuted(!window.SoundManager.isMuted());
+      syncIcons();
+    });
   });
 });

@@ -16,7 +16,9 @@
       <a href="/" class="font-display text-xl font-semibold flex items-center gap-2">
         <%- icon('book', 'icon w-6 h-6') %> YslaNotes
       </a>
-      <div class="flex items-center gap-2">
+
+      <!-- Desktop nav -->
+      <div class="hidden sm:flex items-center gap-2">
         <a href="/generate" data-sound="click" class="btn-glossy btn-glossy-white px-4 py-2 rounded-full font-semibold flex items-center gap-1.5">
           <%- icon('sparkles', 'icon w-4 h-4') %> Generate from File
         </a>
@@ -32,6 +34,33 @@
         </button>
         <form method="POST" action="/logout">
           <button type="submit" data-sound="click" class="text-white/80 hover:text-white text-sm px-2">Logout</button>
+        </form>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button id="nav-menu-toggle" class="sm:hidden btn-glossy btn-glossy-icon btn-glossy-outline" aria-label="Menu">
+        <%- icon('menu', 'icon w-5 h-5') %>
+      </button>
+    </div>
+
+    <!-- Mobile dropdown -->
+    <div id="nav-menu-mobile" class="hidden sm:hidden flex-col gap-2 px-4 pb-4">
+      <a href="/generate" data-sound="click" class="btn-glossy btn-glossy-white px-4 py-2 rounded-full font-semibold flex items-center justify-center gap-1.5">
+        <%- icon('sparkles', 'icon w-4 h-4') %> Generate from File
+      </a>
+      <a href="/create" data-sound="click" class="btn-glossy btn-glossy-white px-4 py-2 rounded-full font-semibold flex items-center justify-center gap-1.5">
+        <%- icon('plusCircle', 'icon w-4 h-4') %> New Module
+      </a>
+      <a href="/store" data-sound="click" class="btn-glossy btn-glossy-amber px-4 py-2 rounded-full font-semibold flex items-center justify-center gap-1.5">
+        <%- icon('coin', 'icon w-4 h-4') %> <%= coinBalance %> Coins — Store
+      </a>
+      <div class="flex items-center justify-center gap-3 pt-1">
+        <button class="mute-toggle btn-glossy btn-glossy-icon btn-glossy-outline" title="Toggle sound">
+          <span id="mute-icon-on-mobile"><%- icon('speakerWave', 'icon w-5 h-5') %></span>
+          <span id="mute-icon-off-mobile" class="hidden"><%- icon('speakerX', 'icon w-5 h-5') %></span>
+        </button>
+        <form method="POST" action="/logout">
+          <button type="submit" data-sound="click" class="text-white/90 hover:text-white text-sm px-2">Logout</button>
         </form>
       </div>
     </div>
@@ -120,6 +149,7 @@
   </main>
 
   <script src="/js/sounds.js"></script>
+  <script src="/js/nav-menu.js"></script>
   <script src="/js/mascot.js"></script>
   <script src="/js/hearts.js"></script>
   <script src="/js/confirm-modal.js"></script>

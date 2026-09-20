@@ -464,3 +464,108 @@ button:not(:disabled):active, a.btn:active {
   width: 100%;
   height: 100%;
 }
+
+/* --- Floating music player --- */
+.music-player {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 70;
+}
+
+.music-fab {
+  box-shadow: 0 6px 16px rgba(190, 24, 93, 0.35);
+}
+
+.music-panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.75rem);
+  width: 15.5rem;
+  max-width: calc(100vw - 2rem);
+  background: #fff;
+  border: 1px solid #fbcfe8;
+  border-radius: 1rem;
+  box-shadow: 0 12px 30px rgba(190, 24, 93, 0.25);
+  padding: 0.9rem;
+}
+
+.music-panel-title {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #db2777;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.15rem;
+}
+
+.music-track-title {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.9rem;
+  margin-bottom: 0.6rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.music-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.7rem;
+}
+
+.music-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  color: #db2777;
+  background: #fdf2f8;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.music-controls button:hover {
+  background: #fbcfe8;
+  transform: scale(1.06);
+}
+
+#music-playpause {
+  width: 2.6rem;
+  height: 2.6rem;
+  background: linear-gradient(135deg, #ec4899, #d946ef);
+  color: #fff;
+}
+
+.music-track-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 9.5rem;
+  overflow-y: auto;
+  border-top: 1px solid #fce7f3;
+  padding-top: 0.5rem;
+}
+
+.music-track-list li {
+  padding: 0.35rem 0.4rem;
+  font-size: 0.82rem;
+  color: #64748b;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.music-track-list li:hover {
+  background: #fdf2f8;
+}
+
+.music-track-list li.active {
+  background: #fce7f3;
+  color: #db2777;
+  font-weight: 600;
+}

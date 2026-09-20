@@ -166,10 +166,32 @@
     <% } %>
   </main>
 
+  <!-- Ariana Grande music player -->
+  <div class="music-player">
+    <button id="music-player-toggle" class="btn-glossy btn-glossy-pink btn-glossy-icon music-fab" title="Music player">
+      <%- icon('musicNote', 'icon w-5 h-5') %>
+    </button>
+    <div id="music-panel" class="music-panel hidden">
+      <p class="music-panel-title">Ariana Grande</p>
+      <p id="music-track-title" class="music-track-title">&mdash;</p>
+      <div class="music-controls">
+        <button id="music-prev" title="Previous"><%- icon('skipBack', 'icon w-4 h-4') %></button>
+        <button id="music-playpause" title="Play / Pause">
+          <span id="music-play-icon"><%- icon('play', 'icon w-5 h-5') %></span>
+          <span id="music-pause-icon" class="hidden"><%- icon('pause', 'icon w-5 h-5') %></span>
+        </button>
+        <button id="music-next" title="Next"><%- icon('skipForward', 'icon w-4 h-4') %></button>
+      </div>
+      <ul id="music-track-list"></ul>
+    </div>
+    <div id="spotify-embed-container" style="position:absolute; width:1px; height:1px; overflow:hidden; opacity:0; pointer-events:none;"></div>
+  </div>
+
   <script src="/js/sounds.js"></script>
   <script src="/js/nav-menu.js"></script>
   <script src="/js/mascot.js"></script>
   <script src="/js/hearts.js"></script>
   <script src="/js/confirm-modal.js"></script>
+  <script src="/js/spotify-player.js"></script>
 </body>
 </html>

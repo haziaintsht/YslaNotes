@@ -118,7 +118,10 @@
                 <p id="card-front-text"></p>
               </div>
               <div class="flip-card-back">
-                <p id="card-back-text"></p>
+                <div class="max-h-full overflow-y-auto">
+                  <p id="card-back-text"></p>
+                  <p id="card-back-rationale" class="hidden text-sm font-normal opacity-90 mt-3"></p>
+                </div>
               </div>
             </div>
           </div>
@@ -131,6 +134,7 @@
             <p id="mc-question" class="text-lg font-semibold text-slate-800 mb-4"></p>
             <div id="mc-options" class="flex flex-col gap-3"></div>
             <p id="mc-feedback" class="mt-4 font-semibold hidden"></p>
+            <p id="mc-rationale" class="mt-2 text-sm text-slate-500 hidden"></p>
           </div>
         </div>
 

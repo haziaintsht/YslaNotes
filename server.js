@@ -4,9 +4,11 @@ const express = require('express');
 const path = require('path');
 const multer = require('multer');
 const session = require('express-session');
+const rateLimit = require('express-rate-limit');
 const supabase = require('./db');
 const extractText = require('./lib/extractText');
 const generateQuestions = require('./lib/generateQuestions');
+const { QUESTION_TYPES } = generateQuestions;
 const icon = require('./lib/icons');
 const { computeDashboardStats } = require('./lib/stats');
 
@@ -16,6 +18,10 @@ if (!process.env.APP_PASSWORD || !process.env.SESSION_SECRET) {
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Trust Render's (or any) reverse proxy so secure cookies and req.secure work correctly
+if (isProduction) app.set('trust proxy', 1);
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -38,16 +44,28 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true } // 30 days
+  cookie: {
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    httpOnly: true,
+    secure: isProduction // only send the session cookie over HTTPS in production
+  }
 }));
 
 // ---------- Auth ----------
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Too many login attempts. Please try again in 15 minutes.'
+});
 
 app.get('/login', (req, res) => {
   res.render('login', { error: req.query.error === '1' });
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', loginLimiter, (req, res) => {
   if (req.body.password && req.body.password === process.env.APP_PASSWORD) {
     req.session.authenticated = true;
     return res.redirect('/');
@@ -243,7 +261,8 @@ app.post('/generate', (req, res, next) => {
       question: q.question,
       answer: q.answer,
       question_type: q.question_type,
-      options: q.options
+      options: q.options,
+      rationale: q.rationale
     }));
 
     const { error: flashcardsError } = await supabase.from('flashcards').insert(flashcardRows);
@@ -391,7 +410,8 @@ app.post('/modules/:id/regenerate', async (req, res) => {
       question: q.question,
       answer: q.answer,
       question_type: q.question_type,
-      options: q.options
+      options: q.options,
+      rationale: q.rationale
     }));
 
     const { error: insertError } = await supabase.from('flashcards').insert(flashcardRows);
@@ -438,24 +458,45 @@ function parseOptionsField(optionsText) {
   return lines.length > 0 ? lines : null;
 }
 
+// Validates/normalizes question_type + options + answer together, since true_false
+// has fixed options and multiple_choice needs the answer to match one of its options.
+function resolveQuestionTypeFields(question_type, options, answer) {
+  const type = QUESTION_TYPES.includes(question_type) ? question_type : 'flashcard';
+
+  if (type === 'true_false') {
+    if (answer !== 'True' && answer !== 'False') {
+      return { error: 'True/False questions need the answer to be exactly "True" or "False".' };
+    }
+    return { type, options: ['True', 'False'] };
+  }
+
+  if (type === 'multiple_choice') {
+    const parsedOptions = parseOptionsField(options);
+    if (!parsedOptions || parsedOptions.length < 2) {
+      return { error: 'Multiple choice questions need at least 2 options (one per line).' };
+    }
+    if (!parsedOptions.includes(answer)) {
+      return { error: 'The answer must exactly match one of the options, word-for-word.' };
+    }
+    return { type, options: parsedOptions };
+  }
+
+  return { type, options: null };
+}
+
 // POST /flashcards/:id/update — Save edits to a single question
 app.post('/flashcards/:id/update', async (req, res) => {
   const { id } = req.params;
-  const { module_id, question, answer, question_type, options } = req.body;
+  const { module_id, question, answer, question_type, options, rationale } = req.body;
 
   try {
     if (!question || !answer) {
       return res.status(400).send('Question and answer are required.');
     }
 
-    const parsedOptions = question_type === 'multiple_choice' ? parseOptionsField(options) : null;
-    if (question_type === 'multiple_choice') {
-      if (!parsedOptions || parsedOptions.length < 2) {
-        return res.status(400).send('Multiple choice questions need at least 2 options (one per line).');
-      }
-      if (!parsedOptions.includes(answer)) {
-        return res.status(400).send('The answer must exactly match one of the options, word-for-word.');
-      }
+    const resolved = resolveQuestionTypeFields(question_type, options, answer);
+    if (resolved.error) {
+      return res.status(400).send(resolved.error);
     }
 
     const { error } = await supabase
@@ -463,8 +504,9 @@ app.post('/flashcards/:id/update', async (req, res) => {
       .update({
         question,
         answer,
-        question_type: ['flashcard', 'multiple_choice', 'situational'].includes(question_type) ? question_type : 'flashcard',
-        options: parsedOptions
+        question_type: resolved.type,
+        options: resolved.options,
+        rationale: rationale || null
       })
       .eq('id', id);
     if (error) throw error;
@@ -494,29 +536,25 @@ app.post('/flashcards/:id/delete', async (req, res) => {
 // POST /modules/:id/flashcards/add — Add a single new question to an existing module
 app.post('/modules/:id/flashcards/add', async (req, res) => {
   const { id } = req.params;
-  const { question, answer, question_type, options } = req.body;
+  const { question, answer, question_type, options, rationale } = req.body;
 
   try {
     if (!question || !answer) {
       return res.status(400).send('Question and answer are required.');
     }
 
-    const parsedOptions = question_type === 'multiple_choice' ? parseOptionsField(options) : null;
-    if (question_type === 'multiple_choice') {
-      if (!parsedOptions || parsedOptions.length < 2) {
-        return res.status(400).send('Multiple choice questions need at least 2 options (one per line).');
-      }
-      if (!parsedOptions.includes(answer)) {
-        return res.status(400).send('The answer must exactly match one of the options, word-for-word.');
-      }
+    const resolved = resolveQuestionTypeFields(question_type, options, answer);
+    if (resolved.error) {
+      return res.status(400).send(resolved.error);
     }
 
     const { error } = await supabase.from('flashcards').insert({
       module_id: id,
       question,
       answer,
-      question_type: ['flashcard', 'multiple_choice', 'situational'].includes(question_type) ? question_type : 'flashcard',
-      options: parsedOptions
+      question_type: resolved.type,
+      options: resolved.options,
+      rationale: rationale || null
     });
     if (error) throw error;
 
@@ -532,7 +570,7 @@ app.get('/api/flashcards/:moduleId', async (req, res) => {
   try {
     const { data: flashcards, error } = await supabase
       .from('flashcards')
-      .select('id, question, answer, question_type, options')
+      .select('id, question, answer, question_type, options, rationale')
       .eq('module_id', req.params.moduleId)
       .order('id', { ascending: true });
     if (error) throw error;

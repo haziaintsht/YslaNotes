@@ -35,7 +35,7 @@
     <h1 class="text-2xl font-bold text-slate-800 mb-1 flex items-center gap-2">
       <%- icon('sparkles', 'icon w-6 h-6 text-pink-500') %> Generate Questions from a File
     </h1>
-    <p class="text-slate-500 mb-6">Upload lecture notes, a textbook chapter, or any study material (PDF, Word, or plain text) and AI will turn it into a study module.</p>
+    <p class="text-slate-500 mb-6">Upload lecture notes, a textbook chapter, or any study material (PDF, Word, or plain text) and AI will turn it into a study module — complete with a short rationale for every answer.</p>
 
     <% if (error) { %>
       <div class="bg-pink-50 border border-pink-200 text-pink-700 rounded-lg px-4 py-3 mb-6">
@@ -87,6 +87,10 @@
           <label class="flex items-center gap-2">
             <input type="checkbox" name="types" value="multiple_choice" checked />
             <span>Multiple choice</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="checkbox" name="types" value="true_false" />
+            <span>True / False</span>
           </label>
           <label class="flex items-center gap-2">
             <input type="checkbox" name="types" value="situational" />

@@ -19,8 +19,10 @@ CREATE TABLE IF NOT EXISTS modules (
 );
 
 -- 2. Flashcards / Notes Table linked to Modules
--- question_type: 'flashcard' | 'multiple_choice' | 'situational'
--- options: JSON array of choice strings, used only when question_type = 'multiple_choice'
+-- question_type: 'flashcard' | 'multiple_choice' | 'situational' | 'true_false'
+-- options: JSON array of choice strings, used for 'multiple_choice' (4 options) and
+--          'true_false' (always ["True", "False"])
+-- rationale: optional 1-3 sentence explanation of why the answer is correct
 CREATE TABLE IF NOT EXISTS flashcards (
     id SERIAL PRIMARY KEY,
     module_id INT NOT NULL REFERENCES modules(id) ON DELETE CASCADE,
@@ -28,6 +30,7 @@ CREATE TABLE IF NOT EXISTS flashcards (
     answer TEXT NOT NULL,
     question_type VARCHAR(30) NOT NULL DEFAULT 'flashcard',
     options JSONB,
+    rationale TEXT,
     created_at TIMESTAMPTZ DEFAULT now()
 );
 

@@ -31,11 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const card = document.getElementById('flashcard');
   const cardFront = document.getElementById('card-front-text');
   const cardBack = document.getElementById('card-back-text');
+  const cardBackRationale = document.getElementById('card-back-rationale');
   const flashcardContainer = document.getElementById('flashcard-container');
   const mcContainer = document.getElementById('mc-container');
   const mcQuestion = document.getElementById('mc-question');
   const mcOptions = document.getElementById('mc-options');
   const mcFeedback = document.getElementById('mc-feedback');
+  const mcRationale = document.getElementById('mc-rationale');
   const selfAssess = document.getElementById('self-assess');
   const counter = document.getElementById('card-counter');
   const progressFill = document.getElementById('progress-fill');
@@ -69,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     prevBtn.disabled = currentIndex === 0;
     nextBtn.disabled = currentIndex === activeDeck.length - 1;
 
-    if (current.question_type === 'multiple_choice' && Array.isArray(current.options) && current.options.length > 0) {
+    if (Array.isArray(current.options) && current.options.length > 0) {
       flashcardContainer.classList.add('hidden');
       selfAssess.classList.add('hidden');
       mcContainer.classList.remove('hidden');
@@ -80,6 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
       selfAssess.classList.remove('hidden');
       cardFront.textContent = current.question;
       cardBack.textContent = current.answer;
+      if (current.rationale) {
+        cardBackRationale.textContent = current.rationale;
+        cardBackRationale.classList.remove('hidden');
+      } else {
+        cardBackRationale.classList.add('hidden');
+      }
       card.classList.remove('flipped');
     }
     updateScoreDisplay();
@@ -88,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderMultipleChoice(current) {
     mcQuestion.textContent = current.question;
     mcFeedback.classList.add('hidden');
+    mcRationale.classList.add('hidden');
     mcOptions.innerHTML = '';
     mcOptions.dataset.answered = 'false';
 
@@ -130,6 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
       : `<span class="inline-flex items-center gap-1">${X_SVG} Incorrect — correct answer: ${escapeHtml(current.answer)}</span>`;
     mcFeedback.className = `mt-4 font-semibold ${correct ? 'text-emerald-600' : 'text-pink-600'}`;
     mcFeedback.classList.remove('hidden');
+    if (current.rationale) {
+      mcRationale.textContent = current.rationale;
+      mcRationale.classList.remove('hidden');
+    }
     playSound(correct ? 'correct' : 'incorrect');
 
     if (reviewedIds.size === activeDeck.length) {

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YslaNotes — Rewards Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="min-h-screen">
+  <nav class="bg-gradient-to-r from-pink-500 via-fuchsia-400 to-pink-500 text-white shadow-lg">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="/" class="font-display text-xl font-semibold flex items-center gap-2">
+        <%- icon('book', 'icon w-6 h-6') %> YslaNotes
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="/" class="text-white/80 hover:text-white text-sm flex items-center gap-1">
+          <%- icon('arrowLeft', 'icon w-4 h-4') %> Back to dashboard
+        </a>
+        <button id="mute-toggle" class="mute-toggle text-white/90" title="Toggle sound">
+          <span id="mute-icon-on"><%- icon('speakerWave', 'icon w-5 h-5') %></span>
+          <span id="mute-icon-off" class="hidden"><%- icon('speakerX', 'icon w-5 h-5') %></span>
+        </button>
+        <form method="POST" action="/logout">
+          <button type="submit" data-sound="click" class="text-white/80 hover:text-white text-sm">Logout</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-3xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-slate-800 mb-1 flex items-center gap-2">
+      <%- icon('store', 'icon w-6 h-6 text-pink-500') %> Rewards Store
+    </h1>
+    <p class="text-slate-500 mb-6">Score well on quizzes to earn coins — 10 coins for 100%, 9 for 90-99%, and so on. Redeem them for real rewards below!</p>
+
+    <div class="bg-gradient-to-br from-pink-500 to-fuchsia-500 text-white rounded-2xl shadow-lg p-6 mb-8 flex items-center justify-between">
+      <div>
+        <p class="text-sm opacity-90">Your Balance</p>
+        <p class="text-4xl font-bold flex items-center gap-2"><%- icon('coin', 'icon w-8 h-8') %> <%= balance %></p>
+      </div>
+      <div class="text-6xl opacity-30"><%- icon('coin', 'icon w-16 h-16') %></div>
+    </div>
+
+    <% if (error) { %>
+      <div class="bg-pink-50 border border-pink-200 text-pink-700 rounded-lg px-4 py-3 mb-6">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <h2 class="text-lg font-bold text-slate-800 mb-3">Catalog</h2>
+    <% if (items.length === 0) { %>
+      <div class="text-center py-10 bg-white rounded-xl border border-dashed border-pink-200 mb-8">
+        <p class="text-slate-500">No items yet — add one below.</p>
+      </div>
+    <% } else { %>
+      <div class="grid sm:grid-cols-2 gap-4 mb-8">
+        <% items.forEach(item => { %>
+          <div class="bg-white rounded-xl border border-pink-100 shadow-sm p-5 flex flex-col justify-between">
+            <div>
+              <h3 class="font-bold text-slate-800"><%= item.name %></h3>
+              <% if (item.description) { %><p class="text-slate-500 text-sm mt-1"><%= item.description %></p><% } %>
+            </div>
+            <div class="flex items-center justify-between mt-4">
+              <span class="inline-flex items-center gap-1 text-sm font-bold text-pink-600 bg-pink-50 px-2 py-1 rounded-full">
+                <%- icon('coin', 'icon w-4 h-4') %> <%= item.cost %>
+              </span>
+              <div class="flex items-center gap-3">
+                <form method="POST" action="/store/<%= item.id %>/redeem">
+                  <button type="submit" data-sound="click" data-confirm="Redeem &quot;<%= item.name %>&quot; for <%= item.cost %> coins?"
+                    <%= balance < item.cost ? 'disabled' : '' %>
+                    class="px-4 py-1.5 rounded-full text-sm font-semibold transition <%= balance < item.cost ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-pink-600 text-white hover:bg-pink-700' %>">
+                    Redeem
+                  </button>
+                </form>
+                <details class="relative">
+                  <summary class="list-none cursor-pointer text-slate-400 hover:text-pink-500 text-sm">
+                    <%- icon('pencil', 'icon w-4 h-4') %>
+                  </summary>
+                  <div class="absolute right-0 mt-2 w-64 bg-white border border-pink-100 rounded-xl shadow-lg p-4 z-10">
+                    <form method="POST" action="/store/items/<%= item.id %>/update" class="mb-2">
+                      <input type="text" name="name" value="<%= item.name %>" required
+                        class="w-full border border-slate-300 rounded-lg px-2 py-1 text-sm mb-2" placeholder="Name" />
+                      <textarea name="description" rows="2"
+                        class="w-full border border-slate-300 rounded-lg px-2 py-1 text-sm mb-2" placeholder="Description"><%= item.description || '' %></textarea>
+                      <input type="number" name="cost" value="<%= item.cost %>" min="1" required
+                        class="w-full border border-slate-300 rounded-lg px-2 py-1 text-sm mb-2" placeholder="Cost in coins" />
+                      <button type="submit" data-sound="click" class="w-full bg-pink-600 text-white text-sm font-semibold py-1.5 rounded-lg hover:bg-pink-700 transition">
+                        Save
+                      </button>
+                    </form>
+                    <form method="POST" action="/store/items/<%= item.id %>/delete">
+                      <button type="submit" data-confirm="Remove &quot;<%= item.name %>&quot; from the store?"
+                        class="w-full text-pink-500 text-sm hover:underline flex items-center justify-center gap-1">
+                        <%- icon('trash', 'icon w-4 h-4') %> Remove
+                      </button>
+                    </form>
+                  </div>
+                </details>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <%- icon('plusCircle', 'icon w-5 h-5 text-pink-500') %> Add a Reward
+    </h2>
+    <form method="POST" action="/store/items/add" class="qa-row mb-8">
+      <label class="block text-xs font-semibold text-slate-500 mb-1">Name</label>
+      <input type="text" name="name" required placeholder="e.g. New lip gloss"
+        class="w-full border border-slate-300 rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-pink-400" />
+
+      <label class="block text-xs font-semibold text-slate-500 mb-1">Description (optional)</label>
+      <textarea name="description" rows="2" placeholder="Any details"
+        class="w-full border border-slate-300 rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-pink-400"></textarea>
+
+      <label class="block text-xs font-semibold text-slate-500 mb-1">Cost (coins)</label>
+      <input type="number" name="cost" min="1" required placeholder="e.g. 30"
+        class="w-full border border-slate-300 rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-pink-400" />
+
+      <button type="submit" data-sound="click" class="w-full bg-fuchsia-500 text-white font-semibold py-2 rounded-full hover:bg-fuchsia-600 transition flex items-center justify-center gap-2">
+        <%- icon('plusCircle', 'icon w-4 h-4') %> Add to Store
+      </button>
+    </form>
+
+    <h2 class="text-lg font-bold text-slate-800 mb-3">Recent Activity</h2>
+    <% if (history.length === 0) { %>
+      <div class="text-center py-10 bg-white rounded-xl border border-dashed border-pink-200">
+        <p class="text-slate-500">No coin activity yet — finish a quiz to start earning!</p>
+      </div>
+    <% } else { %>
+      <div class="bg-white rounded-xl border border-pink-100 divide-y divide-pink-50">
+        <% history.forEach(tx => { %>
+          <div class="flex items-center justify-between px-4 py-3">
+            <div>
+              <p class="text-sm font-semibold text-slate-700"><%= tx.note %></p>
+              <p class="text-xs text-slate-400"><%= new Date(tx.created_at).toLocaleString() %></p>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-bold flex items-center gap-1 <%= tx.kind === 'earned' ? 'text-emerald-600' : 'text-pink-600' %>">
+                <%= tx.kind === 'earned' ? '+' : '-' %><%= tx.amount %> <%- icon('coin', 'icon w-3.5 h-3.5') %>
+              </span>
+              <% if (tx.kind === 'redeemed') { %>
+                <% if (tx.fulfilled) { %>
+                  <span class="text-xs text-emerald-600 font-semibold flex items-center gap-1">
+                    <%- icon('checkCircle', 'icon w-3.5 h-3.5') %> Given
+                  </span>
+                <% } else { %>
+                  <form method="POST" action="/rewards/<%= tx.id %>/fulfill">
+                    <button type="submit" data-sound="click" class="text-xs text-amber-600 font-semibold hover:underline">
+                      Mark as given
+                    </button>
+                  </form>
+                <% } %>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+
+  <script src="/js/sounds.js"></script>
+  <script src="/js/mascot.js"></script>
+  <script src="/js/confirm-modal.js"></script>
+</body>
+</html>

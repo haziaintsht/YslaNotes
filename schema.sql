@@ -45,6 +45,41 @@ CREATE TABLE IF NOT EXISTS quiz_attempts (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- 4. Store Items — redeemable rewards catalog, editable from the Store page
+CREATE TABLE IF NOT EXISTS store_items (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    cost INT NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- 5. Coin Transactions — ledger of coins earned (from quiz scores) and redeemed (store purchases)
+-- kind: 'earned' | 'redeemed'. fulfilled tracks whether a redeemed real-world reward has
+-- actually been given yet (toggled manually from the Store page).
+CREATE TABLE IF NOT EXISTS coin_transactions (
+    id SERIAL PRIMARY KEY,
+    kind VARCHAR(20) NOT NULL,
+    amount INT NOT NULL,
+    note TEXT,
+    quiz_attempt_id INT REFERENCES quiz_attempts(id) ON DELETE SET NULL,
+    store_item_id INT REFERENCES store_items(id) ON DELETE SET NULL,
+    fulfilled BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Starter store catalog — edit, delete, or add more anytime from the Store page
+INSERT INTO store_items (name, description, cost) VALUES
+('Lip tint or lipstick', 'Any shade she''s been eyeing', 40),
+('Eyebrow pencil', 'A new brow pencil or pomade', 35),
+('Nail polish', 'A cute new nail color', 25),
+('Sheet mask / skincare treat', 'A little self-care treat', 20),
+('Iced coffee or bubble tea', 'A drink treat, on the house', 15),
+('TikTok Shop ₱100 voucher', 'Redeemable for ₱100 of TikTok Shop credit', 60),
+('TikTok Shop ₱200 voucher', 'Redeemable for ₱200 of TikTok Shop credit', 120),
+('Movie night', 'A movie date or streaming night, her pick', 50);
+
 -- Sample seed data (optional — remove if you want to start empty)
 INSERT INTO modules (title, category, description) VALUES
 ('Data Structures Basics', 'Networking', 'Core concepts of arrays, linked lists, and trees.'),

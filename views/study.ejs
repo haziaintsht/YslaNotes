@@ -20,6 +20,9 @@
         <a href="/" class="text-white/80 hover:text-white text-sm flex items-center gap-1">
           <%- icon('arrowLeft', 'icon w-4 h-4') %> Back to dashboard
         </a>
+        <a href="/store" data-sound="click" class="bg-white/20 text-white font-semibold px-3 py-2 rounded-full hover:bg-white/30 transition flex items-center gap-1.5" title="Rewards Store">
+          <%- icon('coin', 'icon w-4 h-4') %> <%= coinBalance %>
+        </a>
         <button id="mute-toggle" class="mute-toggle text-white/90" title="Toggle sound">
           <span id="mute-icon-on"><%- icon('speakerWave', 'icon w-5 h-5') %></span>
           <span id="mute-icon-off" class="hidden"><%- icon('speakerX', 'icon w-5 h-5') %></span>
@@ -185,6 +188,10 @@
             <p class="text-3xl font-bold text-slate-700" id="final-score-pct">0%</p>
             <p class="text-sm text-slate-500">Score</p>
           </div>
+        </div>
+
+        <div id="coins-earned-box" class="hidden inline-flex items-center gap-2 bg-amber-50 text-amber-700 font-bold px-4 py-2 rounded-full mb-6">
+          <%- icon('coin', 'icon w-5 h-5') %> +<span id="coins-earned-amount">0</span> coins earned!
         </div>
 
         <div class="flex flex-col sm:flex-row justify-center gap-3">

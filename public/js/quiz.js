@@ -53,6 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const finalCorrect = document.getElementById('final-correct');
   const finalReview = document.getElementById('final-review');
   const finalScorePct = document.getElementById('final-score-pct');
+  const coinsEarnedBox = document.getElementById('coins-earned-box');
+  const coinsEarnedEl = document.getElementById('coins-earned-amount');
   const restartFromCompleteBtn = document.getElementById('restart-from-complete-btn');
   const reviewMissedBtn = document.getElementById('review-missed-btn');
   const missedCountEl = document.getElementById('missed-count');
@@ -240,13 +242,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!res.ok) throw new Error('attempt save failed');
         return res.json();
       })
-      .then(() => {
+      .then(data => {
         const noAttemptsMsg = document.getElementById('no-attempts-msg');
         if (noAttemptsMsg) noAttemptsMsg.remove();
         const li = document.createElement('li');
         const pct = Math.round((correct / total) * 100);
         li.textContent = `Just now — ${correct}/${total} (${pct}%)`;
         attemptsList.insertBefore(li, attemptsList.firstChild);
+
+        if (data && data.coinsEarned > 0 && coinsEarnedEl && coinsEarnedBox) {
+          coinsEarnedEl.textContent = data.coinsEarned;
+          coinsEarnedBox.classList.remove('hidden');
+        }
       })
       .catch(() => {}); // non-critical — losing one history row silently is fine
   }
@@ -267,6 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
     reviewedIds.clear();
     missedIds = new Set();
     stopExamTimer();
+    if (coinsEarnedBox) coinsEarnedBox.classList.add('hidden');
     completionScreen.classList.add('hidden');
     quizSession.classList.remove('hidden');
     renderCard();

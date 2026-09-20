@@ -11,6 +11,7 @@ const generateQuestions = require('./lib/generateQuestions');
 const { QUESTION_TYPES } = generateQuestions;
 const icon = require('./lib/icons');
 const { computeDashboardStats } = require('./lib/stats');
+const { coinsForScore, computeBalance } = require('./lib/rewards');
 
 if (!process.env.APP_PASSWORD || !process.env.SESSION_SECRET) {
   throw new Error('Missing APP_PASSWORD or SESSION_SECRET in .env');
@@ -81,6 +82,20 @@ app.use((req, res, next) => {
   if (req.session && req.session.authenticated) return next();
   if (req.path.startsWith('/api/')) return res.status(401).json({ error: 'Unauthorized' });
   res.redirect('/login');
+});
+
+// Makes the current coin balance available to every view (nav badge, etc.)
+// without every single route handler having to fetch and pass it.
+app.use(async (req, res, next) => {
+  try {
+    const { data: transactions, error } = await supabase.from('coin_transactions').select('kind, amount');
+    if (error) throw error;
+    res.locals.coinBalance = computeBalance(transactions);
+  } catch (err) {
+    console.error('Failed to load coin balance:', err);
+    res.locals.coinBalance = 0;
+  }
+  next();
 });
 
 // ---------- Routes ----------
@@ -370,10 +385,148 @@ app.post('/modules/:id/attempts', async (req, res) => {
       .single();
     if (error) throw error;
 
-    res.status(201).json(data);
+    const coinsEarned = coinsForScore(scorePct);
+    if (coinsEarned > 0) {
+      const { error: coinError } = await supabase.from('coin_transactions').insert({
+        kind: 'earned',
+        amount: coinsEarned,
+        note: `Quiz score ${scorePct}%`,
+        quiz_attempt_id: data.id
+      });
+      if (coinError) console.error('Failed to record earned coins:', coinError);
+    }
+
+    res.status(201).json({ ...data, coinsEarned });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /store — Rewards store: current balance, catalog, and redemption/earning history
+app.get('/store', async (req, res) => {
+  try {
+    const { data: items, error: itemsError } = await supabase
+      .from('store_items')
+      .select('*')
+      .eq('active', true)
+      .order('cost', { ascending: true });
+    if (itemsError) throw itemsError;
+
+    const { data: transactions, error: txError } = await supabase
+      .from('coin_transactions')
+      .select('*, store_items(name)')
+      .order('created_at', { ascending: false })
+      .limit(30);
+    if (txError) throw txError;
+
+    res.render('store', { items, balance: res.locals.coinBalance, history: transactions, error: null });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error loading store: ' + err.message);
+  }
+});
+
+// POST /store/:id/redeem — Spend coins on a store item
+app.post('/store/:id/redeem', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { data: item, error: itemError } = await supabase
+      .from('store_items')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    if (itemError) throw itemError;
+    if (!item) return res.status(404).send('Item not found.');
+
+    if (res.locals.coinBalance < item.cost) {
+      return res.status(400).send(`Not enough coins — balance is ${res.locals.coinBalance}, this costs ${item.cost}.`);
+    }
+
+    const { error: insertError } = await supabase.from('coin_transactions').insert({
+      kind: 'redeemed',
+      amount: item.cost,
+      note: `Redeemed: ${item.name}`,
+      store_item_id: item.id
+    });
+    if (insertError) throw insertError;
+
+    res.redirect('/store');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error redeeming item: ' + err.message);
+  }
+});
+
+// POST /store/items/add — Add a new item to the store catalog
+app.post('/store/items/add', async (req, res) => {
+  try {
+    const { name, description, cost } = req.body;
+    const parsedCost = parseInt(cost, 10);
+    if (!name || !parsedCost || parsedCost < 1) {
+      return res.status(400).send('Name and a cost of at least 1 coin are required.');
+    }
+
+    const { error } = await supabase.from('store_items').insert({
+      name,
+      description: description || null,
+      cost: parsedCost
+    });
+    if (error) throw error;
+
+    res.redirect('/store');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error adding item: ' + err.message);
+  }
+});
+
+// POST /store/items/:id/update — Edit an existing store item
+app.post('/store/items/:id/update', async (req, res) => {
+  try {
+    const { name, description, cost } = req.body;
+    const parsedCost = parseInt(cost, 10);
+    if (!name || !parsedCost || parsedCost < 1) {
+      return res.status(400).send('Name and a cost of at least 1 coin are required.');
+    }
+
+    const { error } = await supabase
+      .from('store_items')
+      .update({ name, description: description || null, cost: parsedCost })
+      .eq('id', req.params.id);
+    if (error) throw error;
+
+    res.redirect('/store');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error updating item: ' + err.message);
+  }
+});
+
+// POST /store/items/:id/delete — Remove an item from the catalog (soft delete, so past
+// redemption history that references it stays intact)
+app.post('/store/items/:id/delete', async (req, res) => {
+  try {
+    const { error } = await supabase.from('store_items').update({ active: false }).eq('id', req.params.id);
+    if (error) throw error;
+
+    res.redirect('/store');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error removing item: ' + err.message);
+  }
+});
+
+// POST /rewards/:id/fulfill — Mark a redeemed reward as actually given in real life
+app.post('/rewards/:id/fulfill', async (req, res) => {
+  try {
+    const { error } = await supabase.from('coin_transactions').update({ fulfilled: true }).eq('id', req.params.id);
+    if (error) throw error;
+
+    res.redirect('/store');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error updating redemption: ' + err.message);
   }
 });
 

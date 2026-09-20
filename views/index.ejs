@@ -23,6 +23,9 @@
         <a href="/create" data-sound="click" class="bg-white text-pink-600 font-semibold px-4 py-2 rounded-full hover:bg-pink-50 transition flex items-center gap-1.5">
           <%- icon('plusCircle', 'icon w-4 h-4') %> New Module
         </a>
+        <a href="/store" data-sound="click" class="bg-white/20 text-white font-semibold px-3 py-2 rounded-full hover:bg-white/30 transition flex items-center gap-1.5" title="Rewards Store">
+          <%- icon('coin', 'icon w-4 h-4') %> <%= coinBalance %>
+        </a>
         <button id="mute-toggle" class="mute-toggle text-white/90" title="Toggle sound">
           <span id="mute-icon-on"><%- icon('speakerWave', 'icon w-5 h-5') %></span>
           <span id="mute-icon-off" class="hidden"><%- icon('speakerX', 'icon w-5 h-5') %></span>

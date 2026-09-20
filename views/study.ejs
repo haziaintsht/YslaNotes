@@ -259,7 +259,12 @@
       <%- icon('musicNote', 'icon w-5 h-5') %>
     </button>
     <div id="music-panel" class="music-panel hidden">
-      <p class="music-panel-title">Ariana Grande</p>
+      <div class="music-panel-header">
+        <p class="music-panel-title">Ariana Grande</p>
+        <button id="music-panel-close" class="music-panel-close" title="Close" aria-label="Close">
+          <%- icon('xCircle', 'icon w-4 h-4') %>
+        </button>
+      </div>
       <p id="music-track-title" class="music-track-title">&mdash;</p>
       <div class="music-controls">
         <button id="music-prev" title="Previous"><%- icon('skipBack', 'icon w-4 h-4') %></button>

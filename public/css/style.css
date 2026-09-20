@@ -477,53 +477,84 @@ button:not(:disabled):active, a.btn:active {
   box-shadow: 0 6px 16px rgba(190, 24, 93, 0.35);
 }
 
+.music-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(76, 5, 45, 0.28);
+  z-index: 65;
+}
+
 .music-panel {
   position: absolute;
   right: 0;
   bottom: calc(100% + 0.75rem);
-  width: 15.5rem;
+  width: 17rem;
   max-width: calc(100vw - 2rem);
   background: #fff;
   border: 1px solid #fbcfe8;
-  border-radius: 1rem;
+  border-radius: 1.1rem;
   box-shadow: 0 12px 30px rgba(190, 24, 93, 0.25);
-  padding: 0.9rem;
+  padding: 1rem;
+  z-index: 71;
+}
+
+.music-panel-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
 }
 
 .music-panel-title {
   font-family: 'Fredoka', sans-serif;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #db2777;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-bottom: 0.15rem;
+}
+
+.music-panel-close {
+  color: #d1a3bb;
+  width: 1.6rem;
+  height: 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.music-panel-close:hover {
+  background: #fdf2f8;
+  color: #db2777;
 }
 
 .music-track-title {
   font-weight: 600;
   color: #1e293b;
-  font-size: 0.9rem;
-  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: center;
 }
 
 .music-controls {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  margin-bottom: 0.7rem;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
 }
 
 .music-controls button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.1rem;
-  height: 2.1rem;
+  width: 2.3rem;
+  height: 2.3rem;
   border-radius: 50%;
   color: #db2777;
   background: #fdf2f8;
@@ -536,36 +567,88 @@ button:not(:disabled):active, a.btn:active {
 }
 
 #music-playpause {
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 2.9rem;
+  height: 2.9rem;
   background: linear-gradient(135deg, #ec4899, #d946ef);
   color: #fff;
 }
 
-.music-track-list {
+#music-track-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  max-height: 9.5rem;
+  max-height: 12rem;
   overflow-y: auto;
   border-top: 1px solid #fce7f3;
-  padding-top: 0.5rem;
+  padding-top: 0.4rem;
 }
 
-.music-track-list li {
-  padding: 0.35rem 0.4rem;
-  font-size: 0.82rem;
+#music-track-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.5rem;
+  font-size: 0.85rem;
   color: #64748b;
-  border-radius: 0.5rem;
+  border-radius: 0.6rem;
   cursor: pointer;
 }
 
-.music-track-list li:hover {
+#music-track-list li .music-row-title {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#music-track-list li .music-row-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: #f9a8d4;
+}
+
+#music-track-list li .music-row-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#music-track-list li:hover {
   background: #fdf2f8;
 }
 
-.music-track-list li.active {
+#music-track-list li.active {
   background: #fce7f3;
   color: #db2777;
   font-weight: 600;
+}
+
+#music-track-list li.active .music-row-icon {
+  color: #db2777;
+}
+
+/* On phones the panel becomes a bottom sheet instead of a small popover,
+   so it doesn't awkwardly overlap page content near the corner. */
+@media (max-width: 640px) {
+  .music-panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 1.25rem 1.25rem 0 0;
+    max-height: 75vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 1.4rem;
+  }
+
+  #music-track-list {
+    flex: 1;
+    min-height: 0;
+  }
 }

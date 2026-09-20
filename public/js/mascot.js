@@ -45,25 +45,27 @@ window.addEventListener('load', () => {
   // fluffy floppy ears, a flat little muzzle, and a topknot tied with a bow.
   const SHIHTZU_SVG = `
     <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="30" cy="95" rx="9" ry="5" fill="#e8c39e"/>
-      <ellipse cx="70" cy="95" rx="9" ry="5" fill="#e8c39e"/>
-      <ellipse cx="16" cy="56" rx="13" ry="24" fill="#e8c39e" stroke="#d4a373" stroke-width="2" transform="rotate(-8 16 56)"/>
-      <ellipse cx="84" cy="56" rx="13" ry="24" fill="#e8c39e" stroke="#d4a373" stroke-width="2" transform="rotate(8 84 56)"/>
-      <ellipse cx="50" cy="60" rx="34" ry="30" fill="#fdf6ec" stroke="#e8c39e" stroke-width="3"/>
-      <ellipse cx="34" cy="47" rx="10" ry="8" fill="#e8c39e" opacity="0.55"/>
-      <ellipse cx="66" cy="47" rx="10" ry="8" fill="#e8c39e" opacity="0.55"/>
-      <ellipse cx="50" cy="73" rx="16" ry="11" fill="#fff"/>
-      <circle cx="40" cy="60" r="4" fill="#3f2a1d"/>
-      <circle cx="60" cy="60" r="4" fill="#3f2a1d"/>
-      <circle cx="41.3" cy="58.6" r="1.1" fill="#fff"/>
-      <circle cx="61.3" cy="58.6" r="1.1" fill="#fff"/>
-      <ellipse cx="50" cy="70" rx="4.5" ry="3.2" fill="#2d2019"/>
-      <path d="M50 73 Q46 77 42 75 M50 73 Q54 77 58 75" stroke="#c07a55" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-      <ellipse cx="50" cy="30" rx="9" ry="9" fill="#fdf6ec" stroke="#e8c39e" stroke-width="2"/>
-      <g transform="translate(50,24)">
+      <ellipse cx="32" cy="96" rx="9" ry="4.5" fill="#e8c39e"/>
+      <ellipse cx="68" cy="96" rx="9" ry="4.5" fill="#e8c39e"/>
+      <path d="M26 36 C15 42, 11 58, 19 75 C23 82, 30 80, 30 71 C31 59, 30 46, 26 36 Z" fill="#e8c39e" stroke="#d4a373" stroke-width="2"/>
+      <path d="M74 36 C85 42, 89 58, 81 75 C77 82, 70 80, 70 71 C69 59, 70 46, 74 36 Z" fill="#e8c39e" stroke="#d4a373" stroke-width="2"/>
+      <path d="M22 52 C19 60, 20 68, 25 74" fill="none" stroke="#d4a373" stroke-width="1.3" stroke-linecap="round" opacity="0.7"/>
+      <path d="M78 52 C81 60, 80 68, 75 74" fill="none" stroke="#d4a373" stroke-width="1.3" stroke-linecap="round" opacity="0.7"/>
+      <ellipse cx="50" cy="58" rx="29" ry="27" fill="#fdf6ec" stroke="#e8c39e" stroke-width="3"/>
+      <ellipse cx="36" cy="46" rx="9" ry="7" fill="#e8c39e" opacity="0.5"/>
+      <ellipse cx="64" cy="46" rx="9" ry="7" fill="#e8c39e" opacity="0.5"/>
+      <ellipse cx="50" cy="69" rx="15" ry="10" fill="#fff"/>
+      <circle cx="40" cy="58" r="4.3" fill="#3f2a1d"/>
+      <circle cx="60" cy="58" r="4.3" fill="#3f2a1d"/>
+      <circle cx="41.4" cy="56.5" r="1.2" fill="#fff"/>
+      <circle cx="61.4" cy="56.5" r="1.2" fill="#fff"/>
+      <ellipse cx="50" cy="67" rx="4.3" ry="3" fill="#2d2019"/>
+      <path d="M50 70 Q46 74 42 72 M50 70 Q54 74 58 72" stroke="#c07a55" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="29" rx="8.5" ry="8.5" fill="#fdf6ec" stroke="#e8c39e" stroke-width="2"/>
+      <g transform="translate(50,23)">
         <path d="M-7 0 L0 5 L-7 10 Z" fill="#f472b6"/>
         <path d="M7 0 L0 5 L7 10 Z" fill="#f472b6"/>
-        <circle cx="0" cy="5" r="2.2" fill="#be185d"/>
+        <circle cx="0" cy="5" r="2.1" fill="#be185d"/>
       </g>
     </svg>
   `;

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YslaNotes — Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-sm bg-white rounded-2xl border border-pink-100 shadow-lg p-8">
+    <div class="flex justify-center mb-3">
+      <div class="w-14 h-14 rounded-full bg-gradient-to-br from-pink-400 to-fuchsia-400 flex items-center justify-center text-white">
+        <%- icon('lock', 'icon w-7 h-7') %>
+      </div>
+    </div>
+    <h1 class="font-display text-xl font-semibold text-slate-800 mb-1 text-center flex items-center justify-center gap-2">
+      <%- icon('book', 'icon w-5 h-5 text-pink-500') %> YslaNotes
+    </h1>
+    <p class="text-slate-500 text-sm mb-6 text-center">Enter the password to continue.</p>
+
+    <% if (error) { %>
+      <div class="bg-pink-50 border border-pink-200 text-pink-700 rounded-lg px-4 py-3 mb-4 text-sm flex items-center gap-2">
+        <%- icon('xCircle', 'icon w-4 h-4') %> Incorrect password.
+      </div>
+    <% } %>
+
+    <form method="POST" action="/login">
+      <input type="password" name="password" required autofocus placeholder="Password"
+        class="w-full border border-pink-200 rounded-full px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-pink-400" />
+      <button type="submit" class="w-full bg-pink-600 text-white font-semibold py-2 rounded-full hover:bg-pink-700 transition">
+        Log In
+      </button>
+    </form>
+  </div>
+</body>
+</html>

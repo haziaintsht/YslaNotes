@@ -1,0 +1,309 @@
+/* YslaNotes custom styling — pink theme, flip effect, icons, animations */
+
+:root {
+  --pink-primary: #ec4899;
+  --pink-deep: #db2777;
+  --pink-soft: #fbcfe8;
+  --lavender: #a78bfa;
+  --lavender-deep: #8b5cf6;
+}
+
+body {
+  font-family: 'Poppins', system-ui, sans-serif;
+  background-color: #fdf2f8;
+  background-image:
+    radial-gradient(circle at 8% 12%, rgba(244, 114, 182, 0.16), transparent 40%),
+    radial-gradient(circle at 92% 18%, rgba(167, 139, 250, 0.14), transparent 42%),
+    radial-gradient(circle at 15% 90%, rgba(251, 207, 232, 0.35), transparent 45%),
+    radial-gradient(circle at 88% 85%, rgba(244, 114, 182, 0.12), transparent 40%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  position: relative;
+}
+
+h1, h2, h3, .font-display {
+  font-family: 'Fredoka', 'Poppins', system-ui, sans-serif;
+}
+
+/* --- Decorative floating blobs (purely cosmetic, non-interactive) --- */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: -1;
+}
+
+body::before {
+  top: -80px;
+  right: -60px;
+  background: radial-gradient(circle, #f9a8d4, transparent 70%);
+  animation: floatBlob 12s ease-in-out infinite;
+}
+
+body::after {
+  bottom: -100px;
+  left: -80px;
+  background: radial-gradient(circle, #c4b5fd, transparent 70%);
+  animation: floatBlob 14s ease-in-out infinite reverse;
+}
+
+@keyframes floatBlob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, 25px) scale(1.08); }
+}
+
+/* --- Icons --- */
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: inline-block;
+  vertical-align: -0.25em;
+  flex-shrink: 0;
+}
+
+/* --- Page entrance animation --- */
+main {
+  animation: fadeInUp 0.45s ease both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Buttons: playful bounce feedback --- */
+button, a.btn, .qa-row button[type="submit"] {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+button:not(:disabled):hover, a.btn:hover {
+  transform: translateY(-1px) scale(1.02);
+}
+
+button:not(:disabled):active, a.btn:active {
+  transform: scale(0.96);
+}
+
+/* --- Cards: gentle hover lift --- */
+.bg-white.rounded-xl, .qa-row {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* --- Flashcard flip effect --- */
+.flip-card {
+  background-color: transparent;
+  width: 100%;
+  max-width: 640px;
+  height: 320px;
+  margin: 0 auto;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1.25rem;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(219, 39, 119, 0.18);
+}
+
+.flip-card-front {
+  background: linear-gradient(135deg, #f472b6, #ec4899 60%, #db2777);
+  color: white;
+}
+
+.flip-card-back {
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6 60%, #7c3aed);
+  color: white;
+  transform: rotateY(180deg);
+}
+
+.flip-card-front p,
+.flip-card-back p {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* --- Progress bar --- */
+.progress-track {
+  width: 100%;
+  height: 10px;
+  background: #fce7f3;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f472b6, #ec4899, #db2777);
+  background-size: 200% 100%;
+  transition: width 0.35s ease;
+  animation: shimmer 2.5s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* --- Score badges --- */
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.score-badge.correct {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.score-badge.review {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
+/* --- Multiple choice options --- */
+.mc-option {
+  animation: popIn 0.25s ease both;
+}
+
+.mc-correct {
+  background: #d1fae5;
+  border-color: #10b981;
+  color: #065f46;
+  font-weight: 600;
+  animation: glowPulse 0.5s ease;
+}
+
+.mc-incorrect {
+  background: #fce7f3;
+  border-color: #ec4899;
+  color: #9d174d;
+  font-weight: 600;
+  animation: shake 0.4s ease;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  100% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+}
+
+/* --- Completion screen --- */
+#completion-screen {
+  animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* --- Confetti --- */
+.confetti-piece {
+  position: fixed;
+  top: -10px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 9999;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  to {
+    transform: translateY(105vh) rotate(360deg);
+    opacity: 0.9;
+  }
+}
+
+/* --- Loading spinner --- */
+.loading-spinner {
+  width: 56px;
+  height: 56px;
+  border: 5px solid #fbcfe8;
+  border-top-color: #ec4899;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+#loading-message {
+  transition: opacity 0.2s ease;
+}
+
+/* --- Reusable pop-in animation (modals, etc.) --- */
+.pop-in {
+  animation: bounceIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* --- Dynamic flashcard form rows --- */
+.qa-row {
+  border: 1px solid #fbcfe8;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: white;
+}
+
+.qa-row:hover {
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.1);
+}
+
+/* --- Mute toggle --- */
+.mute-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+}
+
+.mute-toggle:hover {
+  background: rgba(255, 255, 255, 0.15);
+}

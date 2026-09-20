@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YslaNotes — Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="min-h-screen">
+  <nav class="bg-gradient-to-r from-pink-500 via-fuchsia-400 to-pink-500 text-white shadow-lg">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="/" class="font-display text-xl font-semibold flex items-center gap-2">
+        <%- icon('book', 'icon w-6 h-6') %> YslaNotes
+      </a>
+      <div class="flex items-center gap-2">
+        <a href="/generate" data-sound="click" class="bg-white text-pink-600 font-semibold px-4 py-2 rounded-full hover:bg-pink-50 transition flex items-center gap-1.5">
+          <%- icon('sparkles', 'icon w-4 h-4') %> Generate from File
+        </a>
+        <a href="/create" data-sound="click" class="bg-white text-pink-600 font-semibold px-4 py-2 rounded-full hover:bg-pink-50 transition flex items-center gap-1.5">
+          <%- icon('plusCircle', 'icon w-4 h-4') %> New Module
+        </a>
+        <button id="mute-toggle" class="mute-toggle text-white/90" title="Toggle sound">
+          <span id="mute-icon-on"><%- icon('speakerWave', 'icon w-5 h-5') %></span>
+          <span id="mute-icon-off" class="hidden"><%- icon('speakerX', 'icon w-5 h-5') %></span>
+        </button>
+        <form method="POST" action="/logout">
+          <button type="submit" data-sound="click" class="text-white/80 hover:text-white text-sm px-2">Logout</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-5xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-slate-800 mb-1">Your Study Modules</h1>
+    <p class="text-slate-500 mb-6">Search, filter, and review your academic notes and flashcards.</p>
+
+    <% if (stats.totalAttempts === 0) { %>
+      <div class="mb-6 bg-white rounded-xl border border-pink-100 p-4 flex items-center gap-2 text-sm text-slate-500">
+        <%- icon('sparkles', 'icon w-4 h-4 text-pink-500') %> Take your first quiz to start tracking your streak and stats!
+      </div>
+    <% } else { %>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div class="bg-white rounded-xl border border-pink-100 p-4 text-center">
+          <p class="text-2xl font-bold text-pink-600 flex items-center justify-center gap-1">
+            <%- icon('flame', 'icon w-5 h-5') %> <%= stats.streak %>
+          </p>
+          <p class="text-xs text-slate-500 mt-1">Day Streak</p>
+        </div>
+        <div class="bg-white rounded-xl border border-pink-100 p-4 text-center">
+          <p class="text-2xl font-bold text-emerald-600"><%= stats.avgScore %>%</p>
+          <p class="text-xs text-slate-500 mt-1">Avg Score</p>
+        </div>
+        <div class="bg-white rounded-xl border border-pink-100 p-4 text-center">
+          <p class="text-2xl font-bold text-fuchsia-600"><%= stats.totalAttempts %></p>
+          <p class="text-xs text-slate-500 mt-1">Quizzes Taken</p>
+        </div>
+        <div class="bg-white rounded-xl border border-pink-100 p-4 text-center">
+          <p class="text-sm font-bold text-amber-600 truncate" title="<%= stats.weakestCategory || '' %>"><%= stats.weakestCategory || '—' %></p>
+          <p class="text-xs text-slate-500 mt-1">Needs Practice</p>
+        </div>
+      </div>
+    <% } %>
+
+    <form method="GET" action="/" class="flex flex-col sm:flex-row gap-3 mb-8">
+      <input
+        type="text"
+        name="q"
+        value="<%= query %>"
+        placeholder="Search by title or question content..."
+        class="flex-1 border border-pink-200 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400"
+      />
+      <select name="category" class="border border-pink-200 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400">
+        <option value="">All Categories</option>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat %>" <%= selectedCategory === cat ? 'selected' : '' %>><%= cat %></option>
+        <% }) %>
+      </select>
+      <button type="submit" data-sound="click" class="bg-pink-600 text-white px-5 py-2 rounded-full hover:bg-pink-700 transition flex items-center justify-center gap-1.5">
+        <%- icon('search', 'icon w-4 h-4') %> Search
+      </button>
+    </form>
+
+    <% if (modules.length === 0) { %>
+      <div class="text-center py-16 bg-white rounded-xl border border-dashed border-pink-200">
+        <p class="text-slate-500 mb-4">No study modules yet.</p>
+        <a href="/create" class="text-pink-600 font-semibold hover:underline">Create your first one →</a>
+      </div>
+    <% } else { %>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <% modules.forEach(mod => { %>
+          <div class="bg-white rounded-xl border border-pink-100 shadow-sm p-5 flex flex-col justify-between hover:shadow-lg hover:-translate-y-0.5">
+            <div>
+              <span class="inline-block text-xs font-semibold text-pink-600 bg-pink-50 px-2 py-1 rounded-full mb-2">
+                <%= mod.category %>
+              </span>
+              <h2 class="text-lg font-bold text-slate-800 mb-1"><%= mod.title %></h2>
+              <p class="text-slate-500 text-sm line-clamp-2"><%= mod.description %></p>
+            </div>
+            <div class="flex justify-between items-center mt-4">
+              <a href="/study/<%= mod.id %>" class="text-pink-600 font-semibold text-sm hover:underline">
+                Study now →
+              </a>
+              <form method="POST" action="/modules/<%= mod.id %>/delete">
+                <button type="submit" data-confirm="Delete this module and all its flashcards?" class="text-pink-400 text-sm hover:text-pink-600 flex items-center gap-1">
+                  <%- icon('trash', 'icon w-4 h-4') %> Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+
+  <script src="/js/sounds.js"></script>
+  <script src="/js/confirm-modal.js"></script>
+</body>
+</html>

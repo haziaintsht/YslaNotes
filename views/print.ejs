@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YslaNotes — <%= module.title %> (Print)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; }
+      body::before, body::after { display: none !important; }
+      .print-card { break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; }
+      a { color: black !important; text-decoration: none !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <nav class="no-print bg-gradient-to-r from-pink-500 via-fuchsia-400 to-pink-500 text-white shadow-lg">
+    <div class="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="/" class="font-display text-xl font-semibold flex items-center gap-2">
+        <%- icon('book', 'icon w-6 h-6') %> YslaNotes
+      </a>
+      <a href="/study/<%= module.id %>" class="text-white/80 hover:text-white text-sm flex items-center gap-1">
+        <%- icon('arrowLeft', 'icon w-4 h-4') %> Back to study
+      </a>
+    </div>
+  </nav>
+
+  <div class="no-print max-w-3xl mx-auto px-4 pt-6">
+    <button onclick="window.print()" data-sound="click" class="w-full bg-pink-600 text-white font-semibold py-3 rounded-full hover:bg-pink-700 transition flex items-center justify-center gap-2">
+      <%- icon('printer', 'icon w-4 h-4') %> Print / Save as PDF
+    </button>
+    <p class="text-center text-slate-400 text-sm mt-2">In the print dialog, choose "Save as PDF" as the destination to export a file.</p>
+  </div>
+
+  <main class="max-w-3xl mx-auto px-4 py-8">
+    <div class="mb-6">
+      <span class="inline-block text-xs font-semibold text-pink-600 bg-pink-50 px-2 py-1 rounded-full mb-2">
+        <%= module.category %>
+      </span>
+      <h1 class="text-2xl font-bold text-slate-800"><%= module.title %></h1>
+      <% if (module.description) { %><p class="text-slate-500"><%= module.description %></p><% } %>
+      <p class="text-slate-400 text-sm mt-1"><%= flashcards.length %> question<%= flashcards.length === 1 ? '' : 's' %></p>
+    </div>
+
+    <% if (flashcards.length === 0) { %>
+      <div class="text-center py-16 bg-white rounded-xl border border-dashed border-pink-200">
+        <p class="text-slate-500">This module has no flashcards yet.</p>
+      </div>
+    <% } else { %>
+      <div class="flex flex-col gap-4">
+        <% flashcards.forEach((card, i) => { %>
+          <div class="print-card bg-white rounded-xl border border-pink-100 shadow-sm p-5">
+            <p class="text-xs font-semibold text-pink-500 mb-1">
+              Question <%= i + 1 %><% if (card.question_type !== 'flashcard') { %> · <%= card.question_type === 'multiple_choice' ? 'Multiple Choice' : 'Situational' %><% } %>
+            </p>
+            <p class="font-semibold text-slate-800 mb-2"><%= card.question %></p>
+            <% if (Array.isArray(card.options) && card.options.length > 0) { %>
+              <ul class="mb-1 pl-5 list-disc text-slate-600 text-sm">
+                <% card.options.forEach(opt => { %>
+                  <li class="<%= opt === card.answer ? 'font-semibold text-emerald-600' : '' %>"><%= opt %></li>
+                <% }) %>
+              </ul>
+            <% } else { %>
+              <p class="text-slate-600 text-sm"><span class="font-semibold text-emerald-600">Answer: </span><%= card.answer %></p>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+
+  <script src="/js/sounds.js"></script>
+</body>
+</html>

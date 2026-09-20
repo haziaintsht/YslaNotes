@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YslaNotes — Generate from File</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="min-h-screen">
+  <nav class="bg-gradient-to-r from-pink-500 via-fuchsia-400 to-pink-500 text-white shadow-lg">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="/" class="font-display text-xl font-semibold flex items-center gap-2">
+        <%- icon('book', 'icon w-6 h-6') %> YslaNotes
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="/" class="text-white/80 hover:text-white text-sm flex items-center gap-1">
+          <%- icon('arrowLeft', 'icon w-4 h-4') %> Back to dashboard
+        </a>
+        <button id="mute-toggle" class="mute-toggle text-white/90" title="Toggle sound">
+          <span id="mute-icon-on"><%- icon('speakerWave', 'icon w-5 h-5') %></span>
+          <span id="mute-icon-off" class="hidden"><%- icon('speakerX', 'icon w-5 h-5') %></span>
+        </button>
+        <form method="POST" action="/logout">
+          <button type="submit" data-sound="click" class="text-white/80 hover:text-white text-sm">Logout</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-3xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-slate-800 mb-1 flex items-center gap-2">
+      <%- icon('sparkles', 'icon w-6 h-6 text-pink-500') %> Generate Questions from a File
+    </h1>
+    <p class="text-slate-500 mb-6">Upload lecture notes, a textbook chapter, or any study material (PDF, Word, or plain text) and AI will turn it into a study module.</p>
+
+    <% if (error) { %>
+      <div class="bg-pink-50 border border-pink-200 text-pink-700 rounded-lg px-4 py-3 mb-6">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form method="POST" action="/generate" enctype="multipart/form-data" class="bg-white rounded-xl border border-pink-100 shadow-sm p-6">
+      <div class="mb-4">
+        <label class="block text-sm font-semibold text-slate-700 mb-1 flex items-center gap-1">
+          <%- icon('upload', 'icon w-4 h-4 text-pink-500') %> Source file (.pdf, .docx, or .txt)
+        </label>
+        <input type="file" name="file" accept=".pdf,.docx,.txt" required
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400" />
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1">Module title</label>
+          <input type="text" name="title" required placeholder="e.g. Maternal & Newborn Nursing"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1">Category</label>
+          <input type="text" name="category" required placeholder="e.g. Nursing, Research Ethics"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400" />
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-semibold text-slate-700 mb-1">Number of questions</label>
+        <select name="count" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400">
+          <option value="10">10</option>
+          <option value="15" selected>15</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Question types (select at least one)</label>
+        <div class="flex flex-col gap-2">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" name="types" value="flashcard" checked />
+            <span>Flashcard (question + answer)</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="checkbox" name="types" value="multiple_choice" checked />
+            <span>Multiple choice</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="checkbox" name="types" value="situational" />
+            <span>Situational / scenario-based (e.g. NCLEX-style nursing cases)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm font-semibold text-slate-700 mb-1">Special instructions (optional)</label>
+        <textarea name="instructions" rows="3" placeholder="e.g. Focus on medication dosage calculations, write in a harder NCLEX exam style, prioritize the last two chapters..."
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400"></textarea>
+      </div>
+
+      <button type="submit" data-sound="click" class="w-full bg-pink-600 text-white font-semibold py-3 rounded-full hover:bg-pink-700 transition flex items-center justify-center gap-2">
+        <%- icon('sparkles', 'icon w-4 h-4') %> Generate Questions
+      </button>
+      <p class="text-center text-slate-400 text-sm mt-3">This can take up to a couple of minutes for longer documents or larger question counts.</p>
+    </form>
+  </main>
+
+  <!-- Generation loading overlay -->
+  <div id="generate-overlay" class="hidden fixed inset-0 bg-white/90 backdrop-blur-sm items-center justify-center z-50">
+    <div class="text-center px-6">
+      <div class="loading-spinner mx-auto mb-5"></div>
+      <p id="loading-message" class="font-display text-lg font-semibold text-pink-600 mb-1">Reading your file...</p>
+      <p class="text-slate-400 text-sm">Please don't close this tab — this can take up to a couple of minutes.</p>
+    </div>
+  </div>
+
+  <script src="/js/sounds.js"></script>
+  <script>
+    (function () {
+      const messages = [
+        'Reading your file...',
+        'Understanding the material...',
+        'Writing great questions...',
+        'Coming up with tricky options...',
+        'Double-checking every answer...',
+        'Sprinkling in a little exam magic...',
+        'Almost there...'
+      ];
+      const form = document.querySelector('form[action="/generate"]');
+      const overlay = document.getElementById('generate-overlay');
+      const messageEl = document.getElementById('loading-message');
+
+      form.addEventListener('submit', () => {
+        let i = 0;
+        messageEl.textContent = messages[0];
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+        setInterval(() => {
+          i = (i + 1) % messages.length;
+          messageEl.style.opacity = 0;
+          setTimeout(() => {
+            messageEl.textContent = messages[i];
+            messageEl.style.opacity = 1;
+          }, 200);
+        }, 2400);
+      });
+    })();
+  </script>
+</body>
+</html>

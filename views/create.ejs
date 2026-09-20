@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YslaNotes — New Module</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="min-h-screen">
+  <nav class="bg-gradient-to-r from-pink-500 via-fuchsia-400 to-pink-500 text-white shadow-lg">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="/" class="font-display text-xl font-semibold flex items-center gap-2">
+        <%- icon('book', 'icon w-6 h-6') %> YslaNotes
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="/" class="text-white/80 hover:text-white text-sm flex items-center gap-1">
+          <%- icon('arrowLeft', 'icon w-4 h-4') %> Back to dashboard
+        </a>
+        <button id="mute-toggle" class="mute-toggle text-white/90" title="Toggle sound">
+          <span id="mute-icon-on"><%- icon('speakerWave', 'icon w-5 h-5') %></span>
+          <span id="mute-icon-off" class="hidden"><%- icon('speakerX', 'icon w-5 h-5') %></span>
+        </button>
+        <form method="POST" action="/logout">
+          <button type="submit" data-sound="click" class="text-white/80 hover:text-white text-sm">Logout</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-3xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-slate-800 mb-1">Create a New Study Module</h1>
+    <p class="text-slate-500 mb-6">Add a topic, then attach as many flashcards as you need.</p>
+
+    <form method="POST" action="/modules" class="bg-white rounded-xl border border-pink-100 shadow-sm p-6">
+      <div class="mb-4">
+        <label class="block text-sm font-semibold text-slate-700 mb-1">Title</label>
+        <input type="text" name="title" required
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400" />
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-semibold text-slate-700 mb-1">Category</label>
+        <input type="text" name="category" required placeholder="e.g. Research Ethics, Networking, Database"
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400" />
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm font-semibold text-slate-700 mb-1">Description</label>
+        <textarea name="description" rows="3"
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400"></textarea>
+      </div>
+
+      <div class="mb-4 flex justify-between items-center">
+        <h2 class="text-lg font-bold text-slate-800">Flashcards</h2>
+        <button type="button" onclick="addFlashcardRow()" data-sound="click"
+          class="text-pink-600 text-sm font-semibold hover:underline flex items-center gap-1">
+          <%- icon('plusCircle', 'icon w-4 h-4') %> Add flashcard
+        </button>
+      </div>
+
+      <div id="qa-rows" class="mb-6">
+        <div class="qa-row flex flex-col gap-2 mb-3">
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-semibold text-slate-500">Flashcard</span>
+          </div>
+          <input type="text" name="questions[]" placeholder="Question" required
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400" />
+          <textarea name="answers[]" placeholder="Answer" required rows="2"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400"></textarea>
+        </div>
+      </div>
+
+      <button type="submit" data-sound="click" class="w-full bg-pink-600 text-white font-semibold py-3 rounded-full hover:bg-pink-700 transition">
+        Save Module
+      </button>
+    </form>
+  </main>
+
+  <script src="/js/sounds.js"></script>
+  <script src="/js/quiz.js"></script>
+</body>
+</html>

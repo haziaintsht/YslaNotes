@@ -2,6 +2,13 @@
 // Audio streams straight from Spotify's own iframe (spotify:track: URIs below); this file only
 // wires up custom play/pause/next/previous/track-list buttons against that embed's controller.
 // Docs: https://developer.spotify.com/documentation/embeds/references/iframe-api
+//
+// This is a classic multi-page app, so every navigation is a full reload that tears down the
+// iframe. To avoid restarting from track 1 each time, the current track/position/play-state are
+// saved to localStorage on every playback update and restored (seek + resume) once the new
+// page's controller is ready. There's still a brief silent gap during the page load itself —
+// true gapless playback across navigations would need the whole site to intercept links and
+// swap content via JS instead of reloading, which is a much bigger change.
 (function () {
   const PLAYLIST = [
     { title: 'thank u, next', id: '2rPE9A1vEgShuZxxzR2tZH' },
@@ -12,17 +19,36 @@
     { title: 'problem (feat. Iggy Azalea)', id: '1uV3Ehtug28m8RmTjdEM6u' },
     { title: 'God is a woman', id: '0YinKgy0pCj3YPKUGWmTOG' }
   ];
+  const STATE_KEY = 'yslanotes-music-state';
 
   let controller = null;
   let currentIndex = 0;
   let isPaused = true;
+  let lastKnownPositionMs = 0;
+  let hasRestoredPlayback = false;
 
-  function readSavedIndex() {
+  function readSavedState() {
     try {
-      const saved = parseInt(localStorage.getItem('yslanotes-music-index'), 10);
-      if (saved >= 0 && saved < PLAYLIST.length) return saved;
+      const parsed = JSON.parse(localStorage.getItem(STATE_KEY));
+      if (parsed && typeof parsed.index === 'number' && parsed.index >= 0 && parsed.index < PLAYLIST.length) {
+        return {
+          index: parsed.index,
+          positionMs: typeof parsed.positionMs === 'number' ? parsed.positionMs : 0,
+          wasPlaying: !!parsed.wasPlaying
+        };
+      }
     } catch (e) {}
-    return 0;
+    return { index: 0, positionMs: 0, wasPlaying: false };
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STATE_KEY, JSON.stringify({
+        index: currentIndex,
+        positionMs: lastKnownPositionMs,
+        wasPlaying: !isPaused
+      }));
+    } catch (e) {}
   }
 
   function updateUI() {
@@ -42,9 +68,12 @@
   }
 
   function loadIndex(index, autoplay) {
+    hasRestoredPlayback = true; // a manual pick always wins over any pending restore
     currentIndex = (index + PLAYLIST.length) % PLAYLIST.length;
-    try { localStorage.setItem('yslanotes-music-index', String(currentIndex)); } catch (e) {}
+    lastKnownPositionMs = 0;
+    isPaused = !autoplay;
     updateUI();
+    saveState();
     if (controller) {
       controller.loadUri('spotify:track:' + PLAYLIST[currentIndex].id);
       if (autoplay) controller.play();
@@ -67,20 +96,35 @@
     const el = document.getElementById('spotify-embed-container');
     if (!el || !window.SpotifyIframeApi) return;
 
-    currentIndex = readSavedIndex();
+    const saved = readSavedState();
+    currentIndex = saved.index;
+    updateUI();
+
     const options = { uri: 'spotify:track:' + PLAYLIST[currentIndex].id, width: '1', height: '1' };
 
     window.SpotifyIframeApi.createController(el, options, (embedController) => {
       controller = embedController;
       controller.addListener('playback_update', (e) => {
         isPaused = e.data.isPaused;
+        lastKnownPositionMs = e.data.position;
         updateUI();
+        saveState();
+
+        if (!hasRestoredPlayback) {
+          hasRestoredPlayback = true;
+          if (saved.positionMs > 1000) controller.seek(Math.floor(saved.positionMs / 1000));
+          // Browsers block autoplay-with-sound without a fresh user gesture on this new page,
+          // so this resume attempt may be silently blocked — the position/track still carry
+          // over either way, and a single tap on play will pick back up from here.
+          if (saved.wasPlaying) controller.resume();
+          return;
+        }
+
         // auto-advance when the current track finishes
         if (!isPaused && e.data.duration > 0 && e.data.position >= e.data.duration - 400) {
           loadIndex(currentIndex + 1, true);
         }
       });
-      updateUI();
     });
   }
 
@@ -88,6 +132,9 @@
     window.SpotifyIframeApi = IFrameAPI;
     initController();
   };
+
+  window.addEventListener('pagehide', saveState);
+  window.addEventListener('beforeunload', saveState);
 
   document.addEventListener('DOMContentLoaded', () => {
     const panel = document.getElementById('music-panel');

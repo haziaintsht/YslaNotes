@@ -146,6 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
       mcRationale.classList.remove('hidden');
     }
     playSound(correct ? 'correct' : 'incorrect');
+    if (correct && window.fireHeartBurst) {
+      const rect = btn.getBoundingClientRect();
+      window.fireHeartBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    }
 
     if (reviewedIds.size === activeDeck.length) {
       // brief delay so the correct/incorrect feedback is visible before the summary appears
@@ -179,6 +183,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function markCard(status) {
     playSound(status === 'gotIt' ? 'correct' : 'incorrect');
+    if (status === 'gotIt' && window.fireHeartBurst) {
+      const rect = gotItBtn.getBoundingClientRect();
+      window.fireHeartBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    }
     const id = activeDeck[currentIndex].id;
     if (!reviewedIds.has(id)) {
       reviewedIds.add(id);

@@ -360,3 +360,10 @@ button:not(:disabled):active, a.btn:active {
     display: none;
   }
 }
+
+/* --- Login page background animation --- */
+#lottie-bg,
+#lottie-bg svg {
+  width: 100%;
+  height: 100%;
+}

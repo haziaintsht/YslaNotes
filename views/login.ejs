@@ -10,8 +10,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body class="min-h-screen flex items-center justify-center">
-  <div class="w-full max-w-sm bg-white rounded-2xl border border-pink-100 shadow-lg p-8">
+<body class="min-h-screen flex items-center justify-center relative overflow-hidden">
+  <div id="lottie-bg" class="absolute inset-0 opacity-30 pointer-events-none"></div>
+
+  <div class="relative z-10 w-full max-w-sm bg-white rounded-2xl border border-pink-100 shadow-lg p-8">
     <div class="flex justify-center mb-3">
       <div class="w-14 h-14 rounded-full bg-gradient-to-br from-pink-400 to-fuchsia-400 flex items-center justify-center text-white">
         <%- icon('lock', 'icon w-7 h-7') %>
@@ -36,5 +38,17 @@
       </button>
     </form>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js"></script>
+  <script>
+    lottie.loadAnimation({
+      container: document.getElementById('lottie-bg'),
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: '/lottie/japan-scene.json',
+      rendererSettings: { preserveAspectRatio: 'xMidYMid slice' }
+    });
+  </script>
 </body>
 </html>

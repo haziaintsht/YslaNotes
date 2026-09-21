@@ -483,42 +483,6 @@ app.post('/store/:id/redeem', async (req, res) => {
   }
 });
 
-// POST /store/items/:id/update — Edit an existing store item
-app.post('/store/items/:id/update', async (req, res) => {
-  try {
-    const { name, description, cost } = req.body;
-    const parsedCost = parseInt(cost, 10);
-    if (!name || !parsedCost || parsedCost < 1) {
-      return res.status(400).send('Name and a cost of at least 1 coin are required.');
-    }
-
-    const { error } = await supabase
-      .from('store_items')
-      .update({ name, description: description || null, cost: parsedCost })
-      .eq('id', req.params.id);
-    if (error) throw error;
-
-    res.redirect('/store');
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error updating item: ' + err.message);
-  }
-});
-
-// POST /store/items/:id/delete — Remove an item from the catalog (soft delete, so past
-// redemption history that references it stays intact)
-app.post('/store/items/:id/delete', async (req, res) => {
-  try {
-    const { error } = await supabase.from('store_items').update({ active: false }).eq('id', req.params.id);
-    if (error) throw error;
-
-    res.redirect('/store');
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error removing item: ' + err.message);
-  }
-});
-
 // POST /rewards/:id/fulfill — Mark a redeemed reward as actually given in real life
 app.post('/rewards/:id/fulfill', async (req, res) => {
   try {

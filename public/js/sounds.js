@@ -36,6 +36,27 @@ window.SoundManager = (() => {
     } catch (e) {}
   }
 
+  function woof(delay) {
+    if (muted) return;
+    try {
+      const audioCtx = getCtx();
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      const startTime = audioCtx.currentTime + delay;
+      osc.frequency.setValueAtTime(340, startTime);
+      osc.frequency.exponentialRampToValueAtTime(140, startTime + 0.11);
+      gainNode.gain.setValueAtTime(0, startTime);
+      gainNode.gain.linearRampToValueAtTime(0.18, startTime + 0.015);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.13);
+      osc.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      osc.start(startTime);
+      osc.stop(startTime + 0.16);
+    } catch (e) {}
+  }
+
   return {
     isMuted: () => muted,
     setMuted(value) {
@@ -43,6 +64,7 @@ window.SoundManager = (() => {
       try { localStorage.setItem('yslanotes-muted', String(value)); } catch (e) {}
     },
     click() { tone({ freq: 720, duration: 0.07, type: 'sine', gain: 0.07 }); },
+    bark() { woof(0); woof(0.16); },
     flip() { tone({ freq: 480, duration: 0.12, type: 'triangle', gain: 0.08 }); },
     correct() {
       tone({ freq: 660, duration: 0.12, type: 'sine', gain: 0.12 });

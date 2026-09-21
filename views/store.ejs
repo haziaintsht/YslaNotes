@@ -90,39 +90,13 @@
               <span class="inline-flex items-center gap-1 text-sm font-bold text-pink-600 bg-pink-50 px-2 py-1 rounded-full">
                 <%- icon('coin', 'icon w-4 h-4') %> <%= item.cost %>
               </span>
-              <div class="flex items-center gap-3">
-                <form method="POST" action="/store/<%= item.id %>/redeem">
-                  <button type="submit" data-sound="click" data-confirm="Redeem &quot;<%= item.name %>&quot; for <%= item.cost %> coins?"
-                    <%= balance < item.cost ? 'disabled' : '' %>
-                    class="btn-glossy px-4 py-1.5 rounded-full text-sm font-semibold <%= balance < item.cost ? 'btn-glossy-outline' : 'btn-glossy-pink' %>">
-                    Redeem
-                  </button>
-                </form>
-                <details class="relative">
-                  <summary class="list-none cursor-pointer text-slate-400 hover:text-pink-500 text-sm">
-                    <%- icon('pencil', 'icon w-4 h-4') %>
-                  </summary>
-                  <div class="absolute right-0 mt-2 w-64 bg-white border border-pink-100 rounded-xl shadow-lg p-4 z-10">
-                    <form method="POST" action="/store/items/<%= item.id %>/update" class="mb-2">
-                      <input type="text" name="name" value="<%= item.name %>" required
-                        class="w-full border border-slate-300 rounded-lg px-2 py-1 text-sm mb-2" placeholder="Name" />
-                      <textarea name="description" rows="2"
-                        class="w-full border border-slate-300 rounded-lg px-2 py-1 text-sm mb-2" placeholder="Description"><%= item.description || '' %></textarea>
-                      <input type="number" name="cost" value="<%= item.cost %>" min="1" required
-                        class="w-full border border-slate-300 rounded-lg px-2 py-1 text-sm mb-2" placeholder="Cost in coins" />
-                      <button type="submit" data-sound="click" class="btn-glossy btn-glossy-pink w-full text-sm font-semibold py-1.5 rounded-lg">
-                        Save
-                      </button>
-                    </form>
-                    <form method="POST" action="/store/items/<%= item.id %>/delete">
-                      <button type="submit" data-confirm="Remove &quot;<%= item.name %>&quot; from the store?"
-                        class="w-full text-pink-500 text-sm hover:underline flex items-center justify-center gap-1">
-                        <%- icon('trash', 'icon w-4 h-4') %> Remove
-                      </button>
-                    </form>
-                  </div>
-                </details>
-              </div>
+              <form method="POST" action="/store/<%= item.id %>/redeem">
+                <button type="submit" data-sound="click" data-confirm="Redeem &quot;<%= item.name %>&quot; for <%= item.cost %> coins?"
+                  <%= balance < item.cost ? 'disabled' : '' %>
+                  class="btn-glossy px-4 py-1.5 rounded-full text-sm font-semibold <%= balance < item.cost ? 'btn-glossy-outline' : 'btn-glossy-pink' %>">
+                  Redeem
+                </button>
+              </form>
             </div>
           </div>
         <% }) %>

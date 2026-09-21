@@ -101,6 +101,8 @@ window.addEventListener('load', () => {
   wrapper.setAttribute('aria-label', 'Pet Hoshi');
 
   function speak() {
+    if (window.SoundManager) window.SoundManager.bark();
+
     let message = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
     if (message === lastMessage && MESSAGES.length > 1) {
       message = MESSAGES[(MESSAGES.indexOf(message) + 1) % MESSAGES.length];

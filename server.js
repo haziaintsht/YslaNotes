@@ -11,7 +11,7 @@ const generateQuestions = require('./lib/generateQuestions');
 const { QUESTION_TYPES } = generateQuestions;
 const icon = require('./lib/icons');
 const { computeDashboardStats } = require('./lib/stats');
-const { coinsForScore, computeBalance } = require('./lib/rewards');
+const { coinsForScore, computeBalance, DAILY_EARN_CAP } = require('./lib/rewards');
 
 if (!process.env.APP_PASSWORD || !process.env.SESSION_SECRET) {
   throw new Error('Missing APP_PASSWORD or SESSION_SECRET in .env');
@@ -385,7 +385,29 @@ app.post('/modules/:id/attempts', async (req, res) => {
       .single();
     if (error) throw error;
 
-    const coinsEarned = coinsForScore(scorePct);
+    const rawCoins = coinsForScore(scorePct);
+    let coinsEarned = rawCoins;
+    let dailyCapReached = false;
+
+    if (rawCoins > 0) {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const { data: todaysEarned, error: todayError } = await supabase
+        .from('coin_transactions')
+        .select('amount')
+        .eq('kind', 'earned')
+        .gte('created_at', startOfDay.toISOString());
+      if (todayError) throw todayError;
+
+      const earnedToday = (todaysEarned || []).reduce((sum, t) => sum + t.amount, 0);
+      const remainingToday = Math.max(0, DAILY_EARN_CAP - earnedToday);
+      if (rawCoins > remainingToday) {
+        coinsEarned = remainingToday;
+        dailyCapReached = true;
+      }
+    }
+
     if (coinsEarned > 0) {
       const { data: moduleRow } = await supabase.from('modules').select('title').eq('id', id).maybeSingle();
       const moduleTitle = moduleRow ? moduleRow.title : 'a quiz';
@@ -399,7 +421,7 @@ app.post('/modules/:id/attempts', async (req, res) => {
       if (coinError) console.error('Failed to record earned coins:', coinError);
     }
 
-    res.status(201).json({ ...data, coinsEarned });
+    res.status(201).json({ ...data, coinsEarned, dailyCapReached });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });

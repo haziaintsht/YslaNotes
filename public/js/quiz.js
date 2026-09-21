@@ -55,6 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const finalScorePct = document.getElementById('final-score-pct');
   const coinsEarnedBox = document.getElementById('coins-earned-box');
   const coinsEarnedEl = document.getElementById('coins-earned-amount');
+  const coinsCappedNote = document.getElementById('coins-capped-note');
+  const coinsCappedBox = document.getElementById('coins-capped-box');
   const restartFromCompleteBtn = document.getElementById('restart-from-complete-btn');
   const reviewMissedBtn = document.getElementById('review-missed-btn');
   const missedCountEl = document.getElementById('missed-count');
@@ -261,6 +263,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data && data.coinsEarned > 0 && coinsEarnedEl && coinsEarnedBox) {
           coinsEarnedEl.textContent = data.coinsEarned;
           coinsEarnedBox.classList.remove('hidden');
+          if (coinsCappedNote) coinsCappedNote.classList.toggle('hidden', !data.dailyCapReached);
+        } else if (data && data.dailyCapReached && coinsCappedBox) {
+          coinsCappedBox.classList.remove('hidden');
         }
       })
       .catch(() => {}); // non-critical — losing one history row silently is fine
@@ -283,6 +288,8 @@ document.addEventListener('DOMContentLoaded', () => {
     missedIds = new Set();
     stopExamTimer();
     if (coinsEarnedBox) coinsEarnedBox.classList.add('hidden');
+    if (coinsCappedBox) coinsCappedBox.classList.add('hidden');
+    if (coinsCappedNote) coinsCappedNote.classList.add('hidden');
     completionScreen.classList.add('hidden');
     quizSession.classList.remove('hidden');
     renderCard();

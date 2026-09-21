@@ -9,9 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     menu.classList.toggle('flex');
   });
 
-  // close the mobile menu automatically if the viewport is resized past the mobile breakpoint
+  // Close the mobile menu automatically once the desktop row takes over. Checking the
+  // toggle button's own computed visibility (rather than a hardcoded width) keeps this
+  // correct even on pages like the dashboard that use a wider breakpoint than the rest.
   window.addEventListener('resize', () => {
-    if (window.innerWidth >= 640 && !menu.classList.contains('hidden')) {
+    const toggleHidden = getComputedStyle(toggle).display === 'none';
+    if (toggleHidden && !menu.classList.contains('hidden')) {
       menu.classList.add('hidden');
       menu.classList.remove('flex');
     }

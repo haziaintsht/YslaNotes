@@ -17,8 +17,9 @@
         <%- icon('book', 'icon w-6 h-6') %> YslaNotes
       </a>
 
-      <!-- Desktop nav -->
-      <div class="hidden sm:flex items-center gap-2">
+      <!-- Desktop nav (this page has the most buttons of any page, so it needs a wider
+           breakpoint than the others before the full row comfortably fits) -->
+      <div class="hidden lg:flex items-center gap-2">
         <a href="/generate" data-sound="click" class="btn-glossy btn-glossy-white px-4 py-2 rounded-full font-semibold flex items-center gap-1.5">
           <%- icon('sparkles', 'icon w-4 h-4') %> Generate from File
         </a>
@@ -38,13 +39,13 @@
       </div>
 
       <!-- Mobile hamburger -->
-      <button id="nav-menu-toggle" class="sm:hidden btn-glossy btn-glossy-icon btn-glossy-outline" aria-label="Menu">
+      <button id="nav-menu-toggle" class="lg:hidden btn-glossy btn-glossy-icon btn-glossy-outline" aria-label="Menu">
         <%- icon('menu', 'icon w-5 h-5') %>
       </button>
     </div>
 
     <!-- Mobile dropdown -->
-    <div id="nav-menu-mobile" class="hidden sm:hidden flex-col gap-2 px-4 pb-4">
+    <div id="nav-menu-mobile" class="hidden lg:hidden flex-col gap-2 px-4 pb-4">
       <a href="/generate" data-sound="click" class="btn-glossy btn-glossy-white px-4 py-2 rounded-full font-semibold flex items-center justify-center gap-1.5">
         <%- icon('sparkles', 'icon w-4 h-4') %> Generate from File
       </a>

@@ -36,24 +36,54 @@ window.SoundManager = (() => {
     } catch (e) {}
   }
 
-  function woof(delay) {
+  // A plain oscillator sweep just sounds like a tonal "boing" — real barks get their
+  // gruff, percussive texture from a burst of noise, not a pure tone. This layers
+  // filtered noise (the "yip" texture) under a quick pitched sweep (the body/pitch),
+  // tuned higher for a small dog like Hoshi rather than a deep woof.
+  function noiseBuffer(audioCtx, duration) {
+    const size = Math.max(1, Math.floor(audioCtx.sampleRate * duration));
+    const buffer = audioCtx.createBuffer(1, size, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < size; i++) data[i] = Math.random() * 2 - 1;
+    return buffer;
+  }
+
+  function yip(delay) {
     if (muted) return;
     try {
       const audioCtx = getCtx();
       if (!audioCtx) return;
-      const osc = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      osc.type = 'sawtooth';
       const startTime = audioCtx.currentTime + delay;
-      osc.frequency.setValueAtTime(340, startTime);
-      osc.frequency.exponentialRampToValueAtTime(140, startTime + 0.11);
-      gainNode.gain.setValueAtTime(0, startTime);
-      gainNode.gain.linearRampToValueAtTime(0.18, startTime + 0.015);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.13);
-      osc.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
+
+      const noiseSource = audioCtx.createBufferSource();
+      noiseSource.buffer = noiseBuffer(audioCtx, 0.12);
+      const noiseFilter = audioCtx.createBiquadFilter();
+      noiseFilter.type = 'bandpass';
+      noiseFilter.Q.value = 2.2;
+      noiseFilter.frequency.setValueAtTime(1600, startTime);
+      noiseFilter.frequency.exponentialRampToValueAtTime(550, startTime + 0.1);
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(0, startTime);
+      noiseGain.gain.linearRampToValueAtTime(0.4, startTime + 0.006);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.11);
+      noiseSource.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+      noiseSource.start(startTime);
+      noiseSource.stop(startTime + 0.13);
+
+      const osc = audioCtx.createOscillator();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(950, startTime);
+      osc.frequency.exponentialRampToValueAtTime(420, startTime + 0.09);
+      const oscGain = audioCtx.createGain();
+      oscGain.gain.setValueAtTime(0, startTime);
+      oscGain.gain.linearRampToValueAtTime(0.1, startTime + 0.006);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.1);
+      osc.connect(oscGain);
+      oscGain.connect(audioCtx.destination);
       osc.start(startTime);
-      osc.stop(startTime + 0.16);
+      osc.stop(startTime + 0.12);
     } catch (e) {}
   }
 
@@ -64,7 +94,7 @@ window.SoundManager = (() => {
       try { localStorage.setItem('yslanotes-muted', String(value)); } catch (e) {}
     },
     click() { tone({ freq: 720, duration: 0.07, type: 'sine', gain: 0.07 }); },
-    bark() { woof(0); woof(0.16); },
+    bark() { yip(0); yip(0.15); },
     flip() { tone({ freq: 480, duration: 0.12, type: 'triangle', gain: 0.08 }); },
     correct() {
       tone({ freq: 660, duration: 0.12, type: 'sine', gain: 0.12 });

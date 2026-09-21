@@ -72,9 +72,53 @@ window.addEventListener('load', () => {
 
   const wrapper = document.createElement('div');
   wrapper.className = 'mascot-walker';
-  wrapper.setAttribute('aria-hidden', 'true');
   wrapper.style.setProperty('--walk-start', `${gapStart}px`);
   wrapper.style.setProperty('--walk-end', `${gapEnd}px`);
   wrapper.innerHTML = SHIHTZU_SVG;
+
+  // Tap/click Hoshi for a little message — name reveal plus random loving thoughts.
+  const MESSAGES = [
+    "Hi, I'm Hoshi!",
+    'I love you, mommy!',
+    "You're doing amazing today!",
+    'Best mommy in the whole world!',
+    "Keep going, you've got this!",
+    'Sending you all my puppy love!',
+    'You make my tail wag!',
+    "Don't forget to rest a little!",
+    'So proud of you, mommy!',
+    "Woof! I'm cheering for you!"
+  ];
+  let lastMessage = null;
+  let hideTimer = null;
+
+  const bubble = document.createElement('div');
+  bubble.className = 'mascot-bubble';
+  wrapper.appendChild(bubble);
+
+  wrapper.setAttribute('role', 'button');
+  wrapper.setAttribute('tabindex', '0');
+  wrapper.setAttribute('aria-label', 'Pet Hoshi');
+
+  function speak() {
+    let message = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
+    if (message === lastMessage && MESSAGES.length > 1) {
+      message = MESSAGES[(MESSAGES.indexOf(message) + 1) % MESSAGES.length];
+    }
+    lastMessage = message;
+    bubble.textContent = message;
+    bubble.classList.add('visible');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => bubble.classList.remove('visible'), 2800);
+  }
+
+  wrapper.addEventListener('click', speak);
+  wrapper.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      speak();
+    }
+  });
+
   nav.appendChild(wrapper);
 });
